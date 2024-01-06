@@ -222,6 +222,11 @@ body::-webkit-scrollbar {
     width: 80%;
 }
 
+a{
+    color: beige;
+    text-decoration: none;
+}
+
 .projects-container{
     display: flex;
     flex-direction: row;
