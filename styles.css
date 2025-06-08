@@ -106,7 +106,7 @@ a {
 .subtitle {
   font-size: calc(10px + 1vw);
   opacity: 0;
-  animation: fadeIn 0.7s 2.5s forwards;
+  animation: fadeIn 1.5s 5s forwards;
 }
 .arrow-container {
   width: 5vw;
@@ -118,7 +118,7 @@ a {
   opacity: 0;
   width: 5vw;
   object-fit: cover;
-  animation: fadeIn 0.5s 2.8s ease-in-out forwards, bounce 1s linear infinite;
+  animation: fadeIn 1s 6s ease-in-out forwards, bounce 1.5s linear infinite;
 }
 
 /* --- About Section (Home Page) --- */
@@ -461,22 +461,22 @@ a {
 #r1 {
   stroke-dasharray: 427;
   stroke-dashoffset: 427;
-  animation: 0.3s r1 ease-in-out forwards;
+  animation: 0.5s r1 ease-in-out forwards; /* UPDATED: Slower, more deliberate timing */
 }
 #r2 {
   stroke-dasharray: 3827;
   stroke-dashoffset: 3827;
-  animation: 1.5s 0.3s r2 ease-in-out forwards;
+  animation: 3s 0.5s r2 ease-in-out forwards; /* UPDATED: Slower, more deliberate timing */
 }
 #l1 {
   stroke-dasharray: 1351;
   stroke-dashoffset: 1351;
-  animation: 0.5s 1.8s l1 ease-in-out forwards;
+  animation: 1s 3.5s l1 ease-in-out forwards; /* UPDATED: Slower, more deliberate timing */
 }
 #l2 {
   stroke-dasharray: 104;
   stroke-dashoffset: 104;
-  animation: 0.2s 2.3s l2 ease-in-out forwards;
+  animation: 0.5s 4.5s l2 ease-in-out forwards; /* UPDATED: Slower, more deliberate timing */
 }
 @keyframes bounce {
   0%,
