@@ -3,24 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Raymond Liu | Portfolio</title>
     <link type="text/css" rel="stylesheet" href="styles.css" />
     <script defer src="scripts.js"></script>
   </head>
   <body>
     <div class="container" id="container">
-      <div class="home-container">
+      <!-- HOME SECTION -->
+      <header class="home-container">
         <svg
           version="1.1"
           id="Layer_1"
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
-          x="0px"
-          y="0px"
-          width="60%"
-          height="40%"
           viewBox="0 0 1920 1080"
-          style="enable-background: new 0 0 1920 1080"
           xml:space="preserve"
         >
           <style type="text/css">
@@ -84,182 +80,100 @@
           />
         </svg>
 
-        <h3
-          style="
-            font-size: calc(10px + 2vw);
-            opacity: 0;
-            animation: fadeIn 2s 5s forwards;
-          "
-        >
-          Description.
+        <h3 class="subtitle">
+          Honours Computer Science Student at Carleton University
         </h3>
-        <div
-          style="width: 5vw; height: 5vh; align-self: center; margin-top: 1vh"
-        >
-          <img src="media/downarrow.png" class="arrow" />
+        <div class="arrow-container">
+          <img src="media/downarrow.png" class="arrow" alt="down arrow" />
         </div>
-      </div>
+      </header>
 
-      <div id="card-container">
+      <!-- ABOUT SECTION -->
+      <section id="card-container">
         <div id="card">
-          <div
-            class="hidden"
-            style="
-              display: flex;
-              flex-direction: column;
-              width: 50%;
-              margin-left: 3%;
-            "
-          >
-            <h3 style="font-size: calc(10px + 2vw)">About me</h3>
+          <div class="hidden card-text-container">
+            <h3 class="section-title-light">About Me</h3>
             <p id="about-text">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Perspiciatis, dolore ratione inventore sequi quisquam quidem
-              facilis beatae in dolorum, alias culpa! Alias iusto id animi
-              labore. Eum consequatur sit saepe.
+              As a third-year Computer Science student at Carleton University
+              with a minor in Statistics, I am passionate about developing
+              impactful software on both the frontend and backend. I have a love
+              for designing interactive and unique user interfaces, and I am
+              always eager to learn new technologies and take on challenging
+              projects.
             </p>
           </div>
-
           <div class="hidden">
-            <div id="about-imgs-container">
-              <div class="swervo-container">
-                <div class="swervo">
-                  <img src="media/polaroid1.png" class="about-img" />
-                </div>
+            <div class="swervo-container">
+              <div class="swervo">
+                <img
+                  src="media/polaroid1-edited.png"
+                  class="about-img"
+                  alt="a personal photo"
+                />
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <div id="experience">
-        <div
-          class="hidden"
-          style="
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-          "
-        >
-          <h3 style="font-size: calc(10px + 2vw); margin-left: 3vw">
-            Experience
-          </h3>
-          <div class="experience-card">
-            <div class="line"></div>
-            <div class="hidden">
-              <h4>Carleton University</h4>
-              <h5>Teaching Assistant</h5>
-              <h6>September 2020 - Present</h6>
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Quisquam voluptatum, quibusdam, quia, quae voluptates voluptatem
-                consequatur quod voluptatibus quos doloribus quidem. Quisquam
-                voluptatum, quibusdam, quia, quae voluptates voluptatem
-                consequatur quod voluptatibus quos doloribus quidem.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <section class="hidden" id="projects">
-        <h3
-          style="
-            font-size: calc(10px + 2vw);
-            margin-top: 8vh;
-            margin-bottom: 8vh;
-          "
-        >
-          Projects
-        </h3>
-        <div class="projects-container">
-          <a class="swervo-container" id="project-card-container">
-            <div class="swervo" id="project-card">
-              <h3 style="margin: 2vh; font-size: calc(10px + 1vw)">
-                Project 1
-              </h3>
-              <p style="margin: 2vh; font-size: calc(10px + 0.8vw)">
-                In this project I blah blah blah
-              </p>
-            </div>
-          </a>
-
-          <a class="swervo-container" id="project-card-container">
-            <div class="swervo" id="project-card">
-              <h3 style="margin: 2vh; font-size: calc(10px + 1vw)">
-                Project 2
-              </h3>
-              <p style="margin: 2vh; font-size: calc(10px + 0.8vw)">
-                In this project I blah blah blah
-              </p>
-            </div>
-          </a>
-
-          <a class="swervo-container" id="project-card-container">
-            <div class="swervo" id="project-card">
-              <h3 style="margin: 2vh; font-size: calc(10px + 1vw)">
-                Project 3
-              </h3>
-              <p style="margin: 2vh; font-size: calc(10px + 0.8vw)">
-                In this project I blah blah blah
-              </p>
-            </div>
-          </a>
-        </div>
       </section>
 
-      <section id="contact-container">
+      <!-- NAVIGATION BOXES SECTION -->
+      <section class="navigation-container">
+        <a href="career.html" class="nav-box hidden">
+          <h2>Career</h2>
+          <p>View my professional experience, projects, and skills.</p>
+        </a>
+        <a href="personal.html" class="nav-box hidden">
+          <h2>Personal</h2>
+          <p>A glimpse into my hobbies and life outside of code.</p>
+        </a>
+      </section>
+
+      <!-- CONTACT SECTION -->
+      <footer id="contact-container">
         <div id="contact">
-          <h3
-            style="
-              font-size: calc(10px + 2vw);
-              margin-top: 8vh;
-              margin-bottom: 8vh;
-              margin-left: 5vw;
-              color: white;
-            "
-          >
-            Contact
-          </h3>
+          <h3 class="section-title contact-title">Contact</h3>
           <div id="contact-card-container">
             <div class="contact-card">
               <div>
-                <h3 style="font-size: calc(10px + 0.8vw)">Email</h3>
-                <p style="font-size: calc(10px + 0.5vw)">
-                  raymondliu0503@gmail.com
+                <h3 class="contact-card-title">Email</h3>
+                <p class="contact-card-text">
+                  raymondliu3@cmail.carleton.ca
                 </p>
               </div>
             </div>
-            <div class="contact-card">
-              <img src="media/LI-In-Bug.png" id="contact-img" />
+            <a
+              href="https://www.linkedin.com/in/raymond-liu-357368268/"
+              target="_blank"
+              class="contact-card"
+            >
+              <img
+                src="media/LI-In-Bug.png"
+                id="contact-img"
+                alt="LinkedIn Logo"
+              />
               <div>
-                <h3 style="font-size: calc(10px + 0.8vw)">LinkedIn</h3>
-                <a
-                  href="https://www.linkedin.com/in/raymond-liu-357368268/"
-                  target="_blank"
-                  style="font-size: calc(10px + 0.5vw); color: white"
-                >
-                  Raymond Liu
-                </a>
+                <h3 class="contact-card-title">LinkedIn</h3>
+                <p class="contact-card-text">Raymond Liu</p>
               </div>
-            </div>
-            <div class="contact-card">
-              <img src="media/github-mark-white.png" id="contact-img" />
+            </a>
+            <a
+              href="https://github.com/Raymond-Liu0503"
+              target="_blank"
+              class="contact-card"
+            >
+              <img
+                src="media/github-mark-white.png"
+                id="contact-img"
+                alt="GitHub Logo"
+              />
               <div>
-                <h3 style="font-size: calc(10px + 0.8vw)">Github</h3>
-                <a
-                  href="https://github.com/Raymond-Liu0503"
-                  target="_blank"
-                  style="font-size: calc(10px + 0.5vw); color: white"
-                >
-                  Raymond-Liu0503
-                </a>
+                <h3 class="contact-card-title">Github</h3>
+                <p class="contact-card-text">Raymond-Liu0503</p>
               </div>
-            </div>
+            </a>
           </div>
         </div>
-      </section>
+      </footer>
     </div>
   </body>
 </html>
