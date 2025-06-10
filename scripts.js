@@ -65,10 +65,7 @@ function toggleTheme() {
   if (isMobile) {
     // Mobile: restore scrolling and position
     requestAnimationFrame(() => {
-      body.style.position = '';
-      body.style.top = '';
-      body.style.width = '';
-      body.style.overflow = '';
+      unlockBodyScroll();
       window.scrollTo(0, currentScrollY);
       console.log('📱 Mobile scroll restored to:', currentScrollY);
     });
@@ -882,6 +879,14 @@ document.addEventListener("DOMContentLoaded", function () {
   initMobileOptimizations();
 });
 
+function unlockBodyScroll() {
+  const body = document.body;
+  body.style.position = '';
+  body.style.top = '';
+  body.style.width = '';
+  body.style.overflow = '';
+}
+
 // ============================================
 // SCROLL POSITION PRESERVATION - DEPRECATED
 // ============================================
@@ -936,11 +941,26 @@ function fixMobileScrollIssues() {
         const heightDelta = newHeight - lastHeight;
         lastHeight = newHeight;
 
-        // Only restore scroll if height change is significant (likely keyboard)
-        if (Math.abs(heightDelta) > 150 && Math.abs(window.scrollY - lastScrollTop) < 50) {
+        // Only restore scroll if:
+        // 1. Height change is significant (likely keyboard)
+        // 2. The focused element is an input, textarea, or contenteditable
+        // 3. The new height is much less than window.innerHeight (keyboard open)
+        const active = document.activeElement;
+        const isInputFocused = active && (
+          active.tagName === 'INPUT' ||
+          active.tagName === 'TEXTAREA' ||
+          active.isContentEditable
+        );
+        const keyboardLikelyOpen = (window.innerHeight - newHeight) > 120;
+        if (
+          Math.abs(heightDelta) > 100 &&
+          isInputFocused &&
+          keyboardLikelyOpen &&
+          Math.abs(window.scrollY - lastScrollTop) < 50
+        ) {
           window.scrollTo({ top: lastScrollTop, behavior: "auto" });
         }
-        // For small height changes (browser bar), do nothing to avoid scroll jump
+        // For nav bar or other small changes, do nothing
       });
     }
 
