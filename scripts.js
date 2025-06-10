@@ -67,16 +67,28 @@ function updateThemeColorMeta() {
   }
 }
 
-// Function to update background elements visibility
+// Function to update background elements visibility with mobile optimization
 function updateBackgroundElements(theme) {
   const leaves = document.querySelectorAll('.leaf');
   const petals = document.querySelectorAll('.petal');
+  const isMobile = window.innerWidth <= 768;
+
+  // Reduce background element count on mobile for better performance
+  const maxElements = isMobile ? 8 : 12;
 
   if (theme === 'light') {
     // Show petals, hide leaves
-    petals.forEach(petal => {
-      petal.style.opacity = '0.7';
-      petal.style.display = 'block';
+    petals.forEach((petal, index) => {
+      if (index < maxElements) {
+        petal.style.opacity = isMobile ? '0.5' : '0.7'; // Reduced opacity on mobile
+        petal.style.display = 'block';
+        // Reduce animation complexity on mobile
+        if (isMobile) {
+          petal.style.animationDuration = '20s'; // Slower animation
+        }
+      } else {
+        petal.style.display = 'none';
+      }
     });
     leaves.forEach(leaf => {
       leaf.style.opacity = '0';
@@ -84,45 +96,90 @@ function updateBackgroundElements(theme) {
     });
   } else {
     // Show leaves, hide petals
-    leaves.forEach(leaf => {
-      leaf.style.opacity = '0.6';
-      leaf.style.display = 'block';
+    leaves.forEach((leaf, index) => {
+      if (index < maxElements) {
+        leaf.style.opacity = isMobile ? '0.4' : '0.6'; // Reduced opacity on mobile
+        leaf.style.display = 'block';
+        // Reduce animation complexity on mobile
+        if (isMobile) {
+          leaf.style.animationDuration = '18s'; // Slower animation
+        }
+      } else {
+        leaf.style.display = 'none';
+      }
     });
     petals.forEach(petal => {
       petal.style.opacity = '0';
       petal.style.display = 'none';
     });
   }
-}// Simple Polaroid Interactions
+}// Simple Polaroid Interactions - Enhanced Mobile Optimized
 function initializePolaroidEffects() {
   const galleryItems = document.querySelectorAll(".gallery-item");
+  const isMobile = window.innerWidth <= 768 || 'ontouchstart' in window;
 
   galleryItems.forEach((item, index) => {
-    // Add staggered reveal animation
-    item.style.animationDelay = `${index * 0.2}s`;
+    // Faster staggered reveal animation for mobile
+    item.style.animationDelay = `${index * 0.08}s`; // Even faster for better mobile experience
 
-    // Clean hover effect without complex 3D transforms
-    item.addEventListener("mouseenter", (e) => {
-      item.style.transform = "rotate(0deg) scale(1.05) translateY(-10px)";
-      item.style.zIndex = "10";
-      item.style.boxShadow = "0 15px 30px rgba(0, 0, 0, 0.2)";
-    });
+    if (isMobile) {
+      // Further optimized mobile interactions with less DOM manipulation
+      let isPressed = false;
+      
+      item.addEventListener("touchstart", (e) => {
+        if (!isPressed) {
+          isPressed = true;
+          item.style.transform = "scale(0.97) translateZ(0)"; // Using hardware acceleration
+          item.style.transition = "transform 0.1s ease-out";
+        }
+      }, { passive: true });
 
-    item.addEventListener("mouseleave", () => {
-      const rotation = item.style.getPropertyValue("--initial-rotation") || "0deg";
-      item.style.transform = `rotate(${rotation}) translateZ(0)`;
-      item.style.zIndex = "";
-      item.style.boxShadow = "";
-    });
+      item.addEventListener("touchend", () => {
+        if (isPressed) {
+          isPressed = false;
+          const rotation = item.style.getPropertyValue("--initial-rotation") || "0deg";
+          item.style.transform = `rotate(${rotation}) translateZ(0)`;
+          
+          // Single timeout to reset styles
+          setTimeout(() => {
+            item.style.transition = "";
+          }, 150);
+        }
+      }, { passive: true });
 
-    // Simple click animation
+      // Handle touch cancel for better UX
+      item.addEventListener("touchcancel", () => {
+        if (isPressed) {
+          isPressed = false;
+          const rotation = item.style.getPropertyValue("--initial-rotation") || "0deg";
+          item.style.transform = `rotate(${rotation}) translateZ(0)`;
+          item.style.transition = "";
+        }
+      }, { passive: true });
+    } else {
+      // Desktop hover effects
+      item.addEventListener("mouseenter", (e) => {
+        item.style.transform = "rotate(0deg) scale(1.05) translateY(-10px)";
+        item.style.zIndex = "10";
+        item.style.boxShadow = "0 15px 30px rgba(0, 0, 0, 0.2)";
+      });
+
+      item.addEventListener("mouseleave", () => {
+        const rotation = item.style.getPropertyValue("--initial-rotation") || "0deg";
+        item.style.transform = `rotate(${rotation}) translateZ(0)`;
+        item.style.zIndex = "";
+        item.style.boxShadow = "";
+      });
+    }
+
+    // Simple click animation for both mobile and desktop
     item.addEventListener("click", () => {
       item.style.animation = "none";
-      item.style.transform = "rotate(0deg) scale(1.1) translateY(-15px)";
+      item.style.transform = "rotate(0deg) scale(1.05) translateY(-5px)";
       setTimeout(() => {
         item.style.animation = "";
         item.style.transform = "";
-      }, 300);
+      }, 200); // Reduced timeout
     });
   });
 }// Enhanced Timeline Animations
@@ -232,9 +289,9 @@ function initializeScrollEffects() {
   });
 }
 
-// Interactive About Image Effects - Working Mouse Tilt Animation
+// Interactive About Image Effects - Ultra Mobile Optimized
 function initializeInteractiveImage() {
-  console.log('🎯 Initializing interactive image...');
+  console.log('🎯 Initializing ultra-optimized interactive image...');
   
   const imageContainer = document.querySelector('.interactive-image-container');
   
@@ -243,52 +300,101 @@ function initializeInteractiveImage() {
     return;
   }
   
-  console.log('✅ Container found, setting up mouse tilt animation...');
+  console.log('✅ Container found, setting up ultra-optimized animation...');
   
-  let isHovering = false;
+  const isMobile = window.innerWidth <= 768 || 'ontouchstart' in window;
   
-  // Mouse enter - start tracking
-  imageContainer.addEventListener('mouseenter', function() {
-    console.log('🎯 Mouse entered - starting tilt animation');
-    isHovering = true;
-    imageContainer.style.transition = 'none';
-  });
-  
-  // Mouse move - apply tilt based on position
-  imageContainer.addEventListener('mousemove', function(e) {
-    if (!isHovering) return;
+  if (isMobile) {
+    // Ultra-simplified mobile interaction with minimal DOM manipulation
+    let touchActive = false;
     
-    const rect = imageContainer.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+    imageContainer.addEventListener('touchstart', function(e) {
+      if (!touchActive) {
+        touchActive = true;
+        // Use will-change to optimize for the transformation
+        this.style.willChange = 'transform';
+        this.style.transition = 'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)';
+        this.style.transform = 'rotate(-2deg) scale(1.02) translateZ(0)';
+      }
+    }, { passive: true });
     
-    const mouseX = e.clientX - centerX;
-    const mouseY = e.clientY - centerY;
+    imageContainer.addEventListener('touchend', function() {
+      if (touchActive) {
+        touchActive = false;
+        this.style.transform = 'rotate(-2deg) scale(1) translateZ(0)';
+        // Remove will-change after animation
+        setTimeout(() => {
+          this.style.willChange = 'auto';
+          this.style.transition = '';
+        }, 200);
+      }
+    }, { passive: true });
     
-    // Calculate tilt angles
-    const rotateX = (mouseY / rect.height) * -15; // Vertical tilt
-    const rotateY = (mouseX / rect.width) * 15;   // Horizontal tilt
+    imageContainer.addEventListener('touchcancel', function() {
+      if (touchActive) {
+        touchActive = false;
+        this.style.transform = 'rotate(-2deg) scale(1) translateZ(0)';
+        this.style.willChange = 'auto';
+        this.style.transition = '';
+      }
+    }, { passive: true });
+  } else {
+    // Optimized desktop mouse tilt animation with throttling
+    let isHovering = false;
+    let animationId = null;
     
-    // Apply 3D transform
-    imageContainer.style.transform = `
-      rotateX(${rotateX}deg) 
-      rotateY(${rotateY}deg) 
-      scale(1.05) 
-      rotate(-2deg)
-    `;
-    imageContainer.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.3)';
-  });
+    imageContainer.addEventListener('mouseenter', function() {
+      console.log('🎯 Mouse entered - starting optimized tilt animation');
+      isHovering = true;
+      this.style.willChange = 'transform';
+      this.style.transition = 'none';
+    });
+    
+    imageContainer.addEventListener('mousemove', function(e) {
+      if (!isHovering || animationId) return;
+      
+      // Throttle mousemove events
+      animationId = requestAnimationFrame(() => {
+        const rect = this.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        const mouseX = e.clientX - centerX;
+        const mouseY = e.clientY - centerY;
+        
+        // Calculate tilt angles - further reduced
+        const rotateX = (mouseY / rect.height) * -8; // Reduced from -10
+        const rotateY = (mouseX / rect.width) * 8;   // Reduced from 10
+        
+        // Apply optimized 3D transform
+        this.style.transform = `
+          rotateX(${rotateX}deg) 
+          rotateY(${rotateY}deg) 
+          scale(1.02) 
+          rotate(-2deg)
+          translateZ(0)
+        `;
+        this.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.2)';
+        
+        animationId = null;
+      });
+    });
+    
+    imageContainer.addEventListener('mouseleave', function() {
+      console.log('👋 Mouse left - resetting optimized');
+      isHovering = false;
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+      this.style.willChange = 'auto';
+      this.style.transition = 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)'; // Faster, smoother transition
+      this.style.transform = 'rotate(-2deg) translateZ(0)';
+      this.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1), 0 16px 32px rgba(0, 0, 0, 0.1)';
+    });
+  }
   
-  // Mouse leave - reset to original state
-  imageContainer.addEventListener('mouseleave', function() {
-    console.log('👋 Mouse left - resetting');
-    isHovering = false;
-    imageContainer.style.transition = 'all 0.5s ease';
-    imageContainer.style.transform = 'rotate(-2deg)';
-    imageContainer.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1), 0 16px 32px rgba(0, 0, 0, 0.1)';
-  });
-  
-  console.log('✅ Mouse tilt animation setup complete');
+  console.log('✅ Ultra-optimized animation setup complete');
 }
 
 // ============================================
@@ -313,6 +419,12 @@ function initMobileOptimizations() {
   
   // Handle mobile keyboard
   handleMobileKeyboard();
+  
+  // Initialize performance monitoring for mobile
+  initMobilePerformanceMonitoring();
+  
+  // Initialize battery optimizations
+  initBatteryOptimizations();
 }
 
 function initTouchInteractions() {
@@ -354,37 +466,48 @@ function initTouchInteractions() {
 
 function optimizeScrollPerformance() {
   let ticking = false;
+  let scrollCount = 0;
+  const isMobile = window.innerWidth <= 768;
   
   function updateScrollEffects() {
     const scrolled = window.pageYOffset;
     const parallax = document.querySelector(".bg-elements");
     const header = document.querySelector(".header");
 
-    // Throttled parallax effects for mobile
-    if (window.innerWidth > 768) {
+    // Ultra-optimized parallax effects for mobile
+    if (!isMobile) {
+      // Only apply parallax on desktop for better mobile performance
       if (parallax) {
-        const speed = scrolled * 0.3; // Reduced for mobile performance
-        parallax.style.transform = `translateY(${speed}px)`;
+        const speed = scrolled * 0.15; // Even more reduced
+        parallax.style.transform = `translate3d(0, ${speed}px, 0)`;
       }
 
       if (header) {
-        const headerParallax = scrolled * 0.2; // Reduced for mobile
-        header.style.transform = `translateY(${headerParallax}px)`;
+        const headerParallax = scrolled * 0.1; // Even more reduced
+        header.style.transform = `translate3d(0, ${headerParallax}px, 0)`;
       }
     }
 
-    // Update scroll progress
-    const winHeight = window.innerHeight;
-    const docHeight = document.documentElement.scrollHeight;
-    const scrollPercent = scrolled / (docHeight - winHeight);
-    document.documentElement.style.setProperty("--scroll-progress", scrollPercent);
+    // Super throttled scroll progress update for mobile
+    scrollCount++;
+    if (scrollCount % (isMobile ? 10 : 5) === 0) { // Update even less frequently on mobile
+      const winHeight = window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+      const scrollPercent = scrolled / (docHeight - winHeight);
+      document.documentElement.style.setProperty("--scroll-progress", scrollPercent);
+    }
     
     ticking = false;
   }
 
   function requestScrollUpdate() {
     if (!ticking) {
-      requestAnimationFrame(updateScrollEffects);
+      if (isMobile) {
+        // Use setTimeout instead of rAF on mobile for better battery life
+        setTimeout(updateScrollEffects, 16);
+      } else {
+        requestAnimationFrame(updateScrollEffects);
+      }
       ticking = true;
     }
   }
@@ -457,6 +580,131 @@ function handleMobileKeyboard() {
   };
 
   window.addEventListener('resize', handleViewportChange);
+}
+
+// ============================================
+// MOBILE PERFORMANCE MONITORING & ADAPTIVE OPTIMIZATION
+// ============================================
+
+function initMobilePerformanceMonitoring() {
+  const isMobile = window.innerWidth <= 768 || 'ontouchstart' in window;
+  
+  if (!isMobile) return;
+  
+  let performanceMode = 'normal'; // normal, reduced, minimal
+  let frameDropCount = 0;
+  let lastFrameTime = performance.now();
+  
+  // Monitor frame rate and adapt performance
+  function monitorFrameRate() {
+    const currentTime = performance.now();
+    const frameDuration = currentTime - lastFrameTime;
+    
+    // If frame takes longer than 20ms (below 50fps), it's a dropped frame
+    if (frameDuration > 20) {
+      frameDropCount++;
+    }
+    
+    // Every 60 frames, check performance and adapt
+    if (frameDropCount > 0 && frameDropCount % 60 === 0) {
+      adaptPerformanceMode();
+    }
+    
+    lastFrameTime = currentTime;
+    requestAnimationFrame(monitorFrameRate);
+  }
+  
+  function adaptPerformanceMode() {
+    if (frameDropCount > 20 && performanceMode === 'normal') {
+      // Switch to reduced performance mode
+      performanceMode = 'reduced';
+      applyReducedPerformanceMode();
+      console.log('📱 Switched to reduced performance mode for better mobile experience');
+    } else if (frameDropCount > 40 && performanceMode === 'reduced') {
+      // Switch to minimal performance mode
+      performanceMode = 'minimal';
+      applyMinimalPerformanceMode();
+      console.log('📱 Switched to minimal performance mode for optimal mobile experience');
+    }
+  }
+  
+  function applyReducedPerformanceMode() {
+    // Reduce background animations
+    const bgElements = document.querySelectorAll('.leaf, .petal');
+    bgElements.forEach((el, index) => {
+      if (index > 6) { // Hide extra elements
+        el.style.display = 'none';
+      } else {
+        el.style.animationDuration = '25s'; // Slower animations
+      }
+    });
+    
+    // Disable parallax completely
+    const parallaxElements = document.querySelectorAll('.bg-elements, .header');
+    parallaxElements.forEach(el => {
+      el.style.transform = 'none';
+    });
+  }
+  
+  function applyMinimalPerformanceMode() {
+    // Further reduce animations
+    const bgElements = document.querySelectorAll('.leaf, .petal');
+    bgElements.forEach((el, index) => {
+      if (index > 4) { // Show even fewer elements
+        el.style.display = 'none';
+      } else {
+        el.style.animationDuration = '30s'; // Even slower animations
+        el.style.opacity = '0.3'; // More transparent
+      }
+    });
+    
+    // Disable all transform effects on polaroids
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    galleryItems.forEach(item => {
+      item.style.transform = 'none !important';
+    });
+  }
+  
+  // Start monitoring after a delay to let initial animations settle
+  setTimeout(() => {
+    requestAnimationFrame(monitorFrameRate);
+  }, 2000);
+}
+
+// Add battery-aware optimizations
+function initBatteryOptimizations() {
+  if ('getBattery' in navigator) {
+    navigator.getBattery().then(battery => {
+      // If battery is low, apply power-saving optimizations
+      if (battery.level < 0.2) {
+        console.log('🔋 Low battery detected - applying power-saving optimizations');
+        applyPowerSavingMode();
+      }
+      
+      // Monitor battery level changes
+      battery.addEventListener('levelchange', () => {
+        if (battery.level < 0.2) {
+          applyPowerSavingMode();
+        }
+      });
+    });
+  }
+}
+
+function applyPowerSavingMode() {
+  // Reduce all animations to minimal
+  const style = document.createElement('style');
+  style.textContent = `
+    .leaf, .petal {
+      animation-duration: 40s !important;
+      opacity: 0.2 !important;
+    }
+    * {
+      transition-duration: 0.1s !important;
+      animation-duration: 0.1s !important;
+    }
+  `;
+  document.head.appendChild(style);
 }
 
 // Main initialization
