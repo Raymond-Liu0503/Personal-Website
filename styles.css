@@ -290,14 +290,48 @@ a:hover {
   display: none;
 }
 
+/* PRIORITY: Utility classes override theme classes */
+body.show-petals .petal {
+  opacity: 0.7 !important;
+  display: block !important;
+}
+
+body.show-petals .leaf {
+  opacity: 0 !important;
+  display: none !important;
+}
+
+body.show-leaves .leaf {
+  opacity: 0.6 !important;
+  display: block !important;
+}
+
+body.show-leaves .petal {
+  opacity: 0 !important;
+  display: none !important;
+}
+
 /* Mobile optimizations for background elements */
 @media (max-width: 768px) {
-  .show-petals .petal {
-    opacity: 0.4;
+  /* Ensure priority classes work on mobile */
+  body.show-petals .petal {
+    opacity: 0.4 !important;
+    display: block !important;
   }
   
-  .show-leaves .leaf {
-    opacity: 0.3;
+  body.show-leaves .leaf {
+    opacity: 0.3 !important;
+    display: block !important;
+  }
+  
+  body.show-petals .leaf {
+    opacity: 0 !important;
+    display: none !important;
+  }
+  
+  body.show-leaves .petal {
+    opacity: 0 !important;
+    display: none !important;
   }
   
   /* Hide extra elements on mobile for performance */
@@ -2471,11 +2505,26 @@ body:has(.main-nav)::before {
   body {
     scroll-behavior: auto !important;
   }
-  
-  /* Lock scroll during theme transitions */
+    /* Enhanced scroll lock during theme transitions - Mobile Friendly */
   body.theme-changing {
+    /* Use scroll-behavior instead of position fixed for better mobile support */
+    scroll-behavior: auto !important;
     overflow: hidden;
-    position: fixed;
-    width: 100%;
+    /* CSS containment to prevent layout shifts */
+    contain: layout style;
+  }
+  
+  /* Prevent content shifting during theme changes */
+  body.theme-changing #career-content,
+  body.theme-changing #personal-content {
+    contain: layout style paint;
+    will-change: visibility, position;
+    transition: none !important;
+  }
+  
+  /* Disable all animations during theme change for instant switching */
+  body.theme-changing * {
+    transition: none !important;
+    animation-duration: 0s !important;
   }
 }

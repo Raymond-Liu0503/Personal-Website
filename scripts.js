@@ -3,115 +3,98 @@ let mouseX = 0;
 let mouseY = 0;
 
 function toggleTheme() {
-  // ENHANCED: Prevent scroll jumping by locking scroll during DOM changes
-  const currentScrollY = window.pageYOffset;
-  
-  // STEP 1: Lock scroll position IMMEDIATELY to prevent jumps
+  // ENHANCED: Prevent scroll jumping with scroll restoration API + CSS containment
   const originalPosition = window.pageYOffset;
-  let scrollLocked = true;
   
   const body = document.body;
-  
-  // Add CSS scroll lock for mobile
-  body.classList.add('theme-changing');
-  body.style.top = `-${originalPosition}px`;
-  
-  // Override scrollTo during theme change to prevent jumps
-  const originalScrollTo = window.scrollTo;
-  window.scrollTo = function(x, y) {
-    if (!scrollLocked) {
-      originalScrollTo.call(window, x, y);
-    }
-  };
-  
   const sliderButton = document.querySelector(".slider-button");
   const careerContent = document.getElementById("career-content");
   const personalContent = document.getElementById("personal-content");
   const aboutContent = document.getElementById("about-content");
 
+  // STEP 1: Use CSS containment to prevent layout shifts
+  body.classList.add('theme-changing');
+  
+  // STEP 2: Store scroll position in history for restoration
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+
   isLightTheme = !isLightTheme;
 
-  // STEP 2: Use requestAnimationFrame to batch DOM changes and prevent layout thrashing
-  requestAnimationFrame(() => {
-    // Batch all DOM changes together to minimize reflows
-    if (isLightTheme) {
-      // Switch to light theme (Personal)
-      body.classList.remove("dark-theme");
-      body.classList.add("light-theme");
-      sliderButton.innerHTML = "🌸";
-      
-      // OPTIMIZED: Use visibility instead of display to prevent layout shifts
-      careerContent.style.visibility = "hidden";
-      careerContent.style.position = "absolute";
-      careerContent.style.top = "-9999px";
-      personalContent.style.visibility = "visible";
-      personalContent.style.position = "static";
-      personalContent.style.top = "auto";
-      
-      // Update about text
-      aboutContent.innerHTML = `
-                    Outside of my career, I have a bunch of hobbies I enjoy spending my time on, like photography, sports (Hockey, football, badminton, etc), travelling, and so many other spontaneous activities. I love exploring new places, capturing moments through my camera lens, and enjoying the thrill of outdoor adventures. Here are some snapshots of my personal life that reflect my passions and interests, and make sure to check out my <a href="https://www.instagram.com/raymliu_photography/profilecard/?igsh=MW00MWc4djhjaHFxcA==" class="instagram-link">photography page</a>!
-                `;
-    } else {
-      // Switch to dark theme (Career)
-      body.classList.remove("light-theme");
-      body.classList.add("dark-theme");
-      sliderButton.innerHTML = "🍂";
-      
-      // OPTIMIZED: Use visibility instead of display to prevent layout shifts
-      personalContent.style.visibility = "hidden";
-      personalContent.style.position = "absolute";
-      personalContent.style.top = "-9999px";
-      careerContent.style.visibility = "visible";
-      careerContent.style.position = "static";
-      careerContent.style.top = "auto";
+  // STEP 3: Make all DOM changes at once
+  if (isLightTheme) {
+    // Switch to light theme (Personal)
+    body.classList.remove("dark-theme");
+    body.classList.add("light-theme");
+    sliderButton.innerHTML = "🌸";
+    
+    // OPTIMIZED: Use visibility instead of display to prevent layout shifts
+    careerContent.style.visibility = "hidden";
+    careerContent.style.position = "absolute";
+    careerContent.style.top = "-9999px";
+    personalContent.style.visibility = "visible";
+    personalContent.style.position = "static";
+    personalContent.style.top = "auto";
+    
+    // Update about text
+    aboutContent.innerHTML = `
+                  Outside of my career, I have a bunch of hobbies I enjoy spending my time on, like photography, sports (Hockey, football, badminton, etc), travelling, and so many other spontaneous activities. I love exploring new places, capturing moments through my camera lens, and enjoying the thrill of outdoor adventures. Here are some snapshots of my personal life that reflect my passions and interests, and make sure to check out my <a href="https://www.instagram.com/raymliu_photography/profilecard/?igsh=MW00MWc4djhjaHFxcA==" class="instagram-link">photography page</a>!
+              `;
+  } else {
+    // Switch to dark theme (Career)
+    body.classList.remove("light-theme");
+    body.classList.add("dark-theme");
+    sliderButton.innerHTML = "🍂";
+    
+    // OPTIMIZED: Use visibility instead of display to prevent layout shifts
+    personalContent.style.visibility = "hidden";
+    personalContent.style.position = "absolute";
+    personalContent.style.top = "-9999px";
+    careerContent.style.visibility = "visible";
+    careerContent.style.position = "static";
+    careerContent.style.top = "auto";
 
-      // Update about text
-      aboutContent.innerHTML = `
-                    As a third-year Computer Science student at Carleton University with a minor in Statistics, 
-                    I am passionate about developing impactful software on both the frontend and backend. 
-                    I have a love for designing interactive and unique user interfaces, and I am always eager to 
-                    learn new technologies and take on challenging projects.
-                `;
+    // Update about text
+    aboutContent.innerHTML = `
+                  As a third-year Computer Science student at Carleton University with a minor in Statistics, 
+                  I am passionate about developing impactful software on both the frontend and backend. 
+                  I have a love for designing interactive and unique user interfaces, and I am always eager to 
+                  learn new technologies and take on challenging projects.
+              `;
+  }
+  
+  updateBackgroundElements(isLightTheme ? 'light' : 'dark');
+  updateThemeColorMeta();
+  
+  // STEP 4: Force layout recalculation and restore scroll position
+  requestAnimationFrame(() => {
+    // Force reflow to ensure layout is calculated
+    document.body.offsetHeight;
+    
+    // Remove theme changing class
+    body.classList.remove('theme-changing');
+    
+    // Restore scroll position with multiple methods for reliability
+    window.scrollTo({
+      top: originalPosition,
+      behavior: 'instant'
+    });
+    
+    // Fallback scroll restoration
+    if (Math.abs(window.pageYOffset - originalPosition) > 10) {
+      window.scrollTo(0, originalPosition);
     }
     
-    updateBackgroundElements(isLightTheme ? 'light' : 'dark');
-    updateThemeColorMeta();
-      // STEP 3: Release scroll lock and restore position
+    // Final safety check after next frame
     requestAnimationFrame(() => {
-      // Remove CSS scroll lock
-      body.classList.remove('theme-changing');
-      body.style.top = '';
-      
-      // Restore original scrollTo function
-      window.scrollTo = originalScrollTo;
-      scrollLocked = false;
-      
-      // Immediately restore scroll position
-      window.scrollTo(0, originalPosition);
-      
-      // Multiple checkpoints for robust scroll preservation
-      setTimeout(() => {
-        if (Math.abs(window.pageYOffset - originalPosition) > 5) {
-          window.scrollTo(0, originalPosition);
-        }
-      }, 10);
-      
-      setTimeout(() => {
-        if (Math.abs(window.pageYOffset - originalPosition) > 5) {
-          window.scrollTo(0, originalPosition);
-        }
-      }, 50);
-      
-      setTimeout(() => {
-        if (Math.abs(window.pageYOffset - originalPosition) > 5) {
-          window.scrollTo(0, originalPosition);
-        }
-      }, 100);
+      if (Math.abs(window.pageYOffset - originalPosition) > 10) {
+        window.scrollTo(0, originalPosition);
+      }
     });
   });
   
-  console.log('🎨 Enhanced scroll-lock theme toggle completed');
+  console.log('🎨 Enhanced scroll-restoration theme toggle completed');
 }
 
 // Function to update theme color meta tag for mobile
@@ -130,6 +113,9 @@ function updateBackgroundElements(theme) {
   const petals = document.querySelectorAll('.petal');
   const isMobile = window.innerWidth <= 768;
 
+  console.log(`🌸 Updating background elements to theme: ${theme}`);
+  console.log(`🌸 Found ${leaves.length} leaves and ${petals.length} petals`);
+
   // Reduce background element count on mobile for better performance
   const maxElements = isMobile ? 6 : 10; // Further reduced for faster switching
 
@@ -138,11 +124,16 @@ function updateBackgroundElements(theme) {
     // Show petals, hide leaves - use classes for instant switching
     document.body.classList.add('show-petals');
     document.body.classList.remove('show-leaves');
+    console.log('🌸 Added show-petals class, removed show-leaves class');
   } else {
     // Show leaves, hide petals - use classes for instant switching  
     document.body.classList.add('show-leaves');
     document.body.classList.remove('show-petals');
+    console.log('🍂 Added show-leaves class, removed show-petals class');
   }
+  
+  // Debug: Log current classes
+  console.log('🌸 Body classes:', document.body.className);
 }// Simple Polaroid Interactions - Enhanced Mobile Optimized
 function initializePolaroidEffects() {
   const galleryItems = document.querySelectorAll(".gallery-item");
@@ -944,4 +935,33 @@ function fixMobileScrollIssues() {
   
   // Debug scroll issues
   console.log('📱 Enhanced mobile scroll fixes applied');
+}
+
+// Enhanced debug logging for scroll position and background elements
+function debugScrollAndBackground() {
+  const scrollPos = window.pageYOffset;
+  const bodyClasses = document.body.className;
+  const petalsVisible = document.querySelectorAll('.petal[style*="block"], .petal:not([style*="none"])').length;
+  const leavesVisible = document.querySelectorAll('.leaf[style*="block"], .leaf:not([style*="none"])').length;
+  
+  console.log(`📊 Debug Info:
+    🔽 Scroll Position: ${scrollPos}px
+    🎨 Body Classes: "${bodyClasses}"
+    🌸 Visible Petals: ${petalsVisible}
+    🍂 Visible Leaves: ${leavesVisible}
+    📱 Mobile: ${window.innerWidth <= 768}
+    🌍 Theme: ${document.body.classList.contains('light-theme') ? 'Light' : 'Dark'}`);
+}
+
+// Call debug function after theme changes
+function enhancedToggleTheme() {
+  toggleTheme();
+  setTimeout(() => debugScrollAndBackground(), 100);
+}
+
+// Override the theme toggle to include debug logging
+// (This can be removed in production)
+if (typeof window !== 'undefined') {
+  window.debugScrollAndBackground = debugScrollAndBackground;
+  window.enhancedToggleTheme = enhancedToggleTheme;
 }

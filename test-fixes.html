@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cherry Blossoms & Scroll Test</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        background: #1a0f0a;
+        color: white;
+        min-height: 200vh; /* Make page scrollable */
+      }
+
+      .test-section {
+        margin: 50px 0;
+        padding: 20px;
+        border: 1px solid #444;
+        border-radius: 10px;
+      }
+
+      .bg-elements {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .leaf,
+      .petal {
+        position: absolute;
+        animation: float 15s infinite ease-in-out;
+        pointer-events: none;
+        opacity: 0;
+        display: none;
+      }
+
+      .leaf {
+        font-size: 20px;
+        color: #cd853f;
+      }
+
+      .petal {
+        font-size: 16px;
+        color: #fbbf24;
+      }
+
+      /* Priority utility classes */
+      body.show-petals .petal {
+        opacity: 0.7 !important;
+        display: block !important;
+      }
+
+      body.show-petals .leaf {
+        opacity: 0 !important;
+        display: none !important;
+      }
+
+      body.show-leaves .leaf {
+        opacity: 0.6 !important;
+        display: block !important;
+      }
+
+      body.show-leaves .petal {
+        opacity: 0 !important;
+        display: none !important;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(-200px) rotate(0deg);
+          opacity: 0;
+        }
+        15% {
+          opacity: 1;
+        }
+        85% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(calc(100vh + 200px)) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      .petal:nth-child(1) {
+        left: 10%;
+        animation-delay: 0s;
+      }
+      .petal:nth-child(2) {
+        left: 20%;
+        animation-delay: -3s;
+      }
+      .petal:nth-child(3) {
+        left: 30%;
+        animation-delay: -6s;
+      }
+      .petal:nth-child(4) {
+        left: 40%;
+        animation-delay: -1s;
+      }
+      .petal:nth-child(5) {
+        left: 50%;
+        animation-delay: -4s;
+      }
+
+      .leaf:nth-child(6) {
+        left: 15%;
+        animation-delay: -2s;
+      }
+      .leaf:nth-child(7) {
+        left: 25%;
+        animation-delay: -5s;
+      }
+      .leaf:nth-child(8) {
+        left: 35%;
+        animation-delay: -8s;
+      }
+      .leaf:nth-child(9) {
+        left: 45%;
+        animation-delay: -3s;
+      }
+      .leaf:nth-child(10) {
+        left: 55%;
+        animation-delay: -6s;
+      }
+
+      button {
+        padding: 15px 30px;
+        font-size: 16px;
+        background: #d2691e;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 10px;
+      }
+
+      button:hover {
+        background: #cd853f;
+      }
+
+      .scroll-info {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-elements">
+      <!-- Cherry blossoms for light theme -->
+      <div class="petal">🌸</div>
+      <div class="petal">🌺</div>
+      <div class="petal">🌸</div>
+      <div class="petal">🌺</div>
+      <div class="petal">🌸</div>
+
+      <!-- Autumn leaves for dark theme -->
+      <div class="leaf">🍂</div>
+      <div class="leaf">🍁</div>
+      <div class="leaf">🍂</div>
+      <div class="leaf">🍁</div>
+      <div class="leaf">🍂</div>
+    </div>
+
+    <div class="scroll-info" id="scrollInfo">
+      Scroll Position: <span id="scrollPos">0</span>
+    </div>
+
+    <div class="test-section">
+      <h1>🌸 Cherry Blossoms & Scroll Position Test</h1>
+      <p>
+        This page tests both the cherry blossoms background switching and scroll
+        position preservation.
+      </p>
+
+      <button onclick="showPetals()">Show Cherry Blossoms 🌸</button>
+      <button onclick="showLeaves()">Show Autumn Leaves 🍂</button>
+      <button onclick="scrollToMiddle()">Scroll to Middle</button>
+      <button onclick="scrollToBottom()">Scroll to Bottom</button>
+    </div>
+
+    <div class="test-section">
+      <h2>Scroll down to test scroll position preservation!</h2>
+      <p>
+        Use the buttons to switch between cherry blossoms and leaves while at
+        different scroll positions.
+      </p>
+      <p>
+        The scroll position should stay exactly where it was when switching
+        themes.
+      </p>
+    </div>
+
+    <div class="test-section">
+      <h2>Middle Section</h2>
+      <p>This is the middle of the page. Try switching themes from here.</p>
+      <div
+        style="
+          height: 200px;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+          margin: 20px 0;
+        "
+      ></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Bottom Section</h2>
+      <p>
+        This is near the bottom. The scroll position should be preserved when
+        switching themes.
+      </p>
+      <div
+        style="
+          height: 300px;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+          margin: 20px 0;
+        "
+      ></div>
+    </div>
+
+    <script>
+      let currentTheme = "leaves";
+
+      function showPetals() {
+        const originalPosition = window.pageYOffset;
+        console.log(
+          "🌸 Switching to petals, original position:",
+          originalPosition
+        );
+
+        // Use scroll restoration API
+        if ("scrollRestoration" in history) {
+          history.scrollRestoration = "manual";
+        }
+
+        document.body.classList.add("show-petals");
+        document.body.classList.remove("show-leaves");
+        currentTheme = "petals";
+
+        // Force layout recalculation and restore scroll
+        requestAnimationFrame(() => {
+          document.body.offsetHeight; // Force reflow
+
+          window.scrollTo({
+            top: originalPosition,
+            behavior: "instant",
+          });
+
+          // Fallback
+          if (Math.abs(window.pageYOffset - originalPosition) > 10) {
+            window.scrollTo(0, originalPosition);
+          }
+
+          console.log("🌸 Petals shown, final position:", window.pageYOffset);
+        });
+      }
+
+      function showLeaves() {
+        const originalPosition = window.pageYOffset;
+        console.log(
+          "🍂 Switching to leaves, original position:",
+          originalPosition
+        );
+
+        // Use scroll restoration API
+        if ("scrollRestoration" in history) {
+          history.scrollRestoration = "manual";
+        }
+
+        document.body.classList.add("show-leaves");
+        document.body.classList.remove("show-petals");
+        currentTheme = "leaves";
+
+        // Force layout recalculation and restore scroll
+        requestAnimationFrame(() => {
+          document.body.offsetHeight; // Force reflow
+
+          window.scrollTo({
+            top: originalPosition,
+            behavior: "instant",
+          });
+
+          // Fallback
+          if (Math.abs(window.pageYOffset - originalPosition) > 10) {
+            window.scrollTo(0, originalPosition);
+          }
+
+          console.log("🍂 Leaves shown, final position:", window.pageYOffset);
+        });
+      }
+
+      function scrollToMiddle() {
+        window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
+      }
+
+      function scrollToBottom() {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+
+      // Update scroll position display
+      function updateScrollPos() {
+        document.getElementById("scrollPos").textContent = Math.round(
+          window.pageYOffset
+        );
+      }
+
+      window.addEventListener("scroll", updateScrollPos);
+      updateScrollPos();
+
+      // Initialize with leaves
+      showLeaves();
+    </script>
+  </body>
+</html>
