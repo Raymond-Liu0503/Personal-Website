@@ -900,11 +900,11 @@ function fixMobileScrollIssues() {
   // Store the initial scroll position
   let scrollLocked = false;
   let lastScrollY = 0;
-  
+
   // Ensure body and html allow scrolling
   document.documentElement.style.touchAction = 'pan-y';
   document.body.style.touchAction = 'pan-y';
-  
+
   // Prevent scroll jumping during theme changes
   const originalScrollTo = window.scrollTo;
   window.scrollTo = function(x, y) {
@@ -912,7 +912,7 @@ function fixMobileScrollIssues() {
       originalScrollTo.call(window, x, y);
     }
   };
-  
+
   // Lock scroll during theme transitions
   window.lockScroll = function() {
     scrollLocked = true;
@@ -924,69 +924,66 @@ function fixMobileScrollIssues() {
   };
 
   (function fixMobileJump() {
-  let lastScrollTop = 0;
-  let ticking = false;
+    let lastScrollTop = 0;
+    let ticking = false;
 
-  // Use visualViewport if available
-  if (window.visualViewport) {
-    let lastHeight = window.visualViewport.height;
+    // Use visualViewport if available
+    if (window.visualViewport) {
+      let lastHeight = window.visualViewport.height;
 
-    window.visualViewport.addEventListener("resize", () => {
-      const newHeight = window.visualViewport.height;
-      const heightDelta = newHeight - lastHeight;
-      lastHeight = newHeight;
+      window.visualViewport.addEventListener("resize", () => {
+        const newHeight = window.visualViewport.height;
+        const heightDelta = newHeight - lastHeight;
+        lastHeight = newHeight;
 
-      // Only trigger scroll adjustment if it's a small change and user hasn't scrolled significantly
-      if (Math.abs(heightDelta) > 10 && Math.abs(window.scrollY - lastScrollTop) < 50) {
-        window.scrollTo({ top: lastScrollTop, behavior: "auto" });
+        // Only restore scroll if height change is significant (likely keyboard)
+        if (Math.abs(heightDelta) > 150 && Math.abs(window.scrollY - lastScrollTop) < 50) {
+          window.scrollTo({ top: lastScrollTop, behavior: "auto" });
+        }
+        // For small height changes (browser bar), do nothing to avoid scroll jump
+      });
+    }
+
+    // Track last known scroll position
+    window.addEventListener("scroll", () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          lastScrollTop = window.scrollY;
+          ticking = false;
+        });
+        ticking = true;
       }
     });
-  }
+  })();
 
-  // Track last known scroll position
-  window.addEventListener("scroll", () => {
-    if (!ticking) {
-      window.requestAnimationFrame(() => {
-        lastScrollTop = window.scrollY;
-        ticking = false;
-      });
-      ticking = true;
-    }
-  });
-})();
-  
   // Fix any elements that might be blocking scroll
   const allElements = document.querySelectorAll('*');
   allElements.forEach(element => {
     const computedStyle = window.getComputedStyle(element);
-    
-    // If an element prevents all touch actions, allow at least pan-y for scrolling
     if (computedStyle.touchAction === 'none') {
-      // Only override if it's not specifically needed (like for interactive elements)
       if (!element.classList.contains('interactive-image-container') &&
           !element.classList.contains('theme-toggle')) {
         element.style.touchAction = 'pan-y';
       }
     }
   });
-  
+
   // Ensure scroll events work properly with debouncing
   let isScrolling = false;
   let scrollTimeout;
-  
+
   window.addEventListener('scroll', function() {
     if (!isScrolling) {
       isScrolling = true;
       document.body.classList.add('is-scrolling');
     }
-    
     clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(function() {
       isScrolling = false;
       document.body.classList.remove('is-scrolling');
     }, 100); // Reduced timeout for faster response
   }, { passive: true });
-  
+
   // Debug scroll issues
   console.log('📱 Enhanced mobile scroll fixes applied');
 }
