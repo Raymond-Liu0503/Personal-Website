@@ -3,15 +3,8 @@ let mouseX = 0;
 let mouseY = 0;
 
 function toggleTheme() {
-  // Store current scroll position and lock everything
+  // Simple, fast theme switching without complex locking
   const currentScrollY = window.pageYOffset;
-  const isMobile = window.innerWidth <= 768;
-  
-  // Add theme-changing class for mobile to prevent scroll jumping
-  if (isMobile) {
-    document.body.classList.add('theme-changing');
-    document.body.style.top = `-${currentScrollY}px`;
-  }
   
   const body = document.body;
   const sliderButton = document.querySelector(".slider-button");
@@ -22,7 +15,7 @@ function toggleTheme() {
   isLightTheme = !isLightTheme;
 
   if (isLightTheme) {
-    // Switch to light theme (Personal) - instant changes
+    // Switch to light theme (Personal)
     body.classList.remove("dark-theme");
     body.classList.add("light-theme");
     sliderButton.innerHTML = "🌸";
@@ -33,10 +26,8 @@ function toggleTheme() {
     aboutContent.innerHTML = `
                   Outside of my career, I have a bunch of hobbies I enjoy spending my time on, like photography, sports (Hockey, football, badminton, etc), travelling, and so many other spontaneous activities. I love exploring new places, capturing moments through my camera lens, and enjoying the thrill of outdoor adventures. Here are some snapshots of my personal life that reflect my passions and interests, and make sure to check out my <a href="https://www.instagram.com/raymliu_photography/profilecard/?igsh=MW00MWc4djhjaHFxcA==" class="instagram-link">photography page</a>!
               `;
-
-    updateBackgroundElements('light');
   } else {
-    // Switch to dark theme (Career) - instant changes
+    // Switch to dark theme (Career)
     body.classList.remove("light-theme");
     body.classList.add("dark-theme");
     sliderButton.innerHTML = "🍂";
@@ -50,25 +41,19 @@ function toggleTheme() {
                   I have a love for designing interactive and unique user interfaces, and I am always eager to 
                   learn new technologies and take on challenging projects.
               `;
-
-    updateBackgroundElements('dark');
   }
   
+  updateBackgroundElements(isLightTheme ? 'light' : 'dark');
   updateThemeColorMeta();
   
-  // Release the lock and restore scroll position
-  if (isMobile) {
-    setTimeout(() => {
-      document.body.classList.remove('theme-changing');
-      document.body.style.top = '';
+  // Simple scroll preservation - just ensure position stays the same
+  setTimeout(() => {
+    if (Math.abs(window.pageYOffset - currentScrollY) > 10) {
       window.scrollTo(0, currentScrollY);
-    }, 100);
-  } else {
-    // Desktop - just ensure scroll position
-    setTimeout(() => window.scrollTo(0, currentScrollY), 10);
-  }
+    }
+  }, 50);
   
-  console.log('⚡ Ultra-fast theme toggle completed - scroll preserved at:', currentScrollY);
+  console.log('🎨 Fast theme toggle completed');
 }
 
 // Function to update theme color meta tag for mobile

@@ -1850,9 +1850,11 @@ html, body {
   }
 }
 
-/* Keyboard Open State Optimizations */
+/* Keyboard Open State Optimizations - FIXED for better mobile UX */
 body.keyboard-open {
-  overflow: hidden;
+  /* FIXED: Don't hide overflow completely - this breaks mobile scrolling */
+  /* Use minimal change instead */
+  -webkit-overflow-scrolling: touch;
 }
 
 body.keyboard-open .header {
@@ -2399,72 +2401,26 @@ body:has(.main-nav)::before {
 }
 
 /* ============================================
-   AGGRESSIVE MOBILE SCROLL JUMP PREVENTION
+   MOBILE SCROLL OPTIMIZATION (SIMPLIFIED)
    ============================================ */
 
-/* Prevent any layout shifts during theme changes */
+/* Simple mobile transitions without layout breaking */
 @media (max-width: 768px) {
-  /* Lock scroll position during transitions */
-  body.theme-changing {
-    overflow: hidden !important;
-    position: fixed !important;
-    width: 100% !important;
-    height: 100% !important;
-  }
-  
-  /* Prevent reflow during content switching */
-  #career-content, #personal-content {
-    position: absolute !important;
-    top: 0;
-    left: 0;
-    width: 100%;
-    opacity: 1;
-    transition: opacity 0.1s ease !important;
-  }
-  
-  #career-content[style*="display: none"] {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    visibility: hidden !important;
-  }
-  
-  #personal-content[style*="display: none"] {
-    opacity: 0 !important;
-    pointer-events: none !important;
-    visibility: hidden !important;
-  }
-  
-  /* Force GPU acceleration for smooth theme switching */
-  .theme-toggle, .slider-button {
-    transform: translateZ(0) !important;
-    will-change: transform !important;
-  }
-  
-  /* Prevent background element reflows */
-  .bg-elements {
-    position: fixed !important;
-    will-change: auto !important;
-  }
-  
-  /* Disable parallax completely on mobile during theme changes */
-  body.theme-changing .bg-elements,
-  body.theme-changing .header {
-    transform: none !important;
-  }
-  
-  /* Ensure critical sections maintain their positions */
-  .about-section, .contact-section {
-    transform: translateZ(0) !important;
-  }
-}
-
-/* Ultra-fast theme transitions on mobile */
-@media (max-width: 768px) and (pointer: coarse) {
+  /* Faster transitions for mobile */
   * {
-    transition-duration: 0.1s !important;
+    transition-duration: 0.15s !important;
   }
   
   .slider-button {
-    transition: transform 0.1s ease !important;
+    transition: transform 0.15s ease !important;
+  }
+  
+  /* Ensure smooth scrolling */
+  html {
+    scroll-behavior: auto;
+  }
+  
+  body {
+    overscroll-behavior: none;
   }
 }
