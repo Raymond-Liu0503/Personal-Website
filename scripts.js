@@ -3,10 +3,27 @@ let mouseX = 0;
 let mouseY = 0;
 
 function toggleTheme() {
-  // Simple, fast theme switching without complex locking
+  // ENHANCED: Prevent scroll jumping by locking scroll during DOM changes
   const currentScrollY = window.pageYOffset;
   
+  // STEP 1: Lock scroll position IMMEDIATELY to prevent jumps
+  const originalPosition = window.pageYOffset;
+  let scrollLocked = true;
+  
   const body = document.body;
+  
+  // Add CSS scroll lock for mobile
+  body.classList.add('theme-changing');
+  body.style.top = `-${originalPosition}px`;
+  
+  // Override scrollTo during theme change to prevent jumps
+  const originalScrollTo = window.scrollTo;
+  window.scrollTo = function(x, y) {
+    if (!scrollLocked) {
+      originalScrollTo.call(window, x, y);
+    }
+  };
+  
   const sliderButton = document.querySelector(".slider-button");
   const careerContent = document.getElementById("career-content");
   const personalContent = document.getElementById("personal-content");
@@ -14,46 +31,87 @@ function toggleTheme() {
 
   isLightTheme = !isLightTheme;
 
-  if (isLightTheme) {
-    // Switch to light theme (Personal)
-    body.classList.remove("dark-theme");
-    body.classList.add("light-theme");
-    sliderButton.innerHTML = "🌸";
-    careerContent.style.display = "none";
-    personalContent.style.display = "block";
-    
-    // Update about text
-    aboutContent.innerHTML = `
-                  Outside of my career, I have a bunch of hobbies I enjoy spending my time on, like photography, sports (Hockey, football, badminton, etc), travelling, and so many other spontaneous activities. I love exploring new places, capturing moments through my camera lens, and enjoying the thrill of outdoor adventures. Here are some snapshots of my personal life that reflect my passions and interests, and make sure to check out my <a href="https://www.instagram.com/raymliu_photography/profilecard/?igsh=MW00MWc4djhjaHFxcA==" class="instagram-link">photography page</a>!
-              `;
-  } else {
-    // Switch to dark theme (Career)
-    body.classList.remove("light-theme");
-    body.classList.add("dark-theme");
-    sliderButton.innerHTML = "🍂";
-    careerContent.style.display = "block";
-    personalContent.style.display = "none";
+  // STEP 2: Use requestAnimationFrame to batch DOM changes and prevent layout thrashing
+  requestAnimationFrame(() => {
+    // Batch all DOM changes together to minimize reflows
+    if (isLightTheme) {
+      // Switch to light theme (Personal)
+      body.classList.remove("dark-theme");
+      body.classList.add("light-theme");
+      sliderButton.innerHTML = "🌸";
+      
+      // OPTIMIZED: Use visibility instead of display to prevent layout shifts
+      careerContent.style.visibility = "hidden";
+      careerContent.style.position = "absolute";
+      careerContent.style.top = "-9999px";
+      personalContent.style.visibility = "visible";
+      personalContent.style.position = "static";
+      personalContent.style.top = "auto";
+      
+      // Update about text
+      aboutContent.innerHTML = `
+                    Outside of my career, I have a bunch of hobbies I enjoy spending my time on, like photography, sports (Hockey, football, badminton, etc), travelling, and so many other spontaneous activities. I love exploring new places, capturing moments through my camera lens, and enjoying the thrill of outdoor adventures. Here are some snapshots of my personal life that reflect my passions and interests, and make sure to check out my <a href="https://www.instagram.com/raymliu_photography/profilecard/?igsh=MW00MWc4djhjaHFxcA==" class="instagram-link">photography page</a>!
+                `;
+    } else {
+      // Switch to dark theme (Career)
+      body.classList.remove("light-theme");
+      body.classList.add("dark-theme");
+      sliderButton.innerHTML = "🍂";
+      
+      // OPTIMIZED: Use visibility instead of display to prevent layout shifts
+      personalContent.style.visibility = "hidden";
+      personalContent.style.position = "absolute";
+      personalContent.style.top = "-9999px";
+      careerContent.style.visibility = "visible";
+      careerContent.style.position = "static";
+      careerContent.style.top = "auto";
 
-    // Update about text
-    aboutContent.innerHTML = `
-                  As a third-year Computer Science student at Carleton University with a minor in Statistics, 
-                  I am passionate about developing impactful software on both the frontend and backend. 
-                  I have a love for designing interactive and unique user interfaces, and I am always eager to 
-                  learn new technologies and take on challenging projects.
-              `;
-  }
-  
-  updateBackgroundElements(isLightTheme ? 'light' : 'dark');
-  updateThemeColorMeta();
-  
-  // Simple scroll preservation - just ensure position stays the same
-  setTimeout(() => {
-    if (Math.abs(window.pageYOffset - currentScrollY) > 10) {
-      window.scrollTo(0, currentScrollY);
+      // Update about text
+      aboutContent.innerHTML = `
+                    As a third-year Computer Science student at Carleton University with a minor in Statistics, 
+                    I am passionate about developing impactful software on both the frontend and backend. 
+                    I have a love for designing interactive and unique user interfaces, and I am always eager to 
+                    learn new technologies and take on challenging projects.
+                `;
     }
-  }, 50);
+    
+    updateBackgroundElements(isLightTheme ? 'light' : 'dark');
+    updateThemeColorMeta();
+      // STEP 3: Release scroll lock and restore position
+    requestAnimationFrame(() => {
+      // Remove CSS scroll lock
+      body.classList.remove('theme-changing');
+      body.style.top = '';
+      
+      // Restore original scrollTo function
+      window.scrollTo = originalScrollTo;
+      scrollLocked = false;
+      
+      // Immediately restore scroll position
+      window.scrollTo(0, originalPosition);
+      
+      // Multiple checkpoints for robust scroll preservation
+      setTimeout(() => {
+        if (Math.abs(window.pageYOffset - originalPosition) > 5) {
+          window.scrollTo(0, originalPosition);
+        }
+      }, 10);
+      
+      setTimeout(() => {
+        if (Math.abs(window.pageYOffset - originalPosition) > 5) {
+          window.scrollTo(0, originalPosition);
+        }
+      }, 50);
+      
+      setTimeout(() => {
+        if (Math.abs(window.pageYOffset - originalPosition) > 5) {
+          window.scrollTo(0, originalPosition);
+        }
+      }, 100);
+    });
+  });
   
-  console.log('🎨 Fast theme toggle completed');
+  console.log('🎨 Enhanced scroll-lock theme toggle completed');
 }
 
 // Function to update theme color meta tag for mobile

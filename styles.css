@@ -1387,9 +1387,18 @@ body.loaded {
   }
 }
 
-/* Personal content section styling */
+/* Personal content section styling - OPTIMIZED for anti-scroll-jump */
 #personal-content {
-  display: none;
+  /* Use visibility instead of display to prevent layout shifts */
+  visibility: hidden;
+  position: absolute;
+  top: -9999px;
+}
+
+/* Career content is visible by default */
+#career-content {
+  visibility: visible;
+  position: static;
 }
 
 .personal-intro-text {
@@ -2412,6 +2421,7 @@ body:has(.main-nav)::before {
   }
   
   .slider-button {
+   
     transition: transform 0.15s ease !important;
   }
   
@@ -2422,5 +2432,50 @@ body:has(.main-nav)::before {
   
   body {
     overscroll-behavior: none;
+  }
+}
+
+/* ============================================
+   ANTI-SCROLL-JUMP PROTECTION
+   ============================================ */
+
+/* Prevent layout shifts during theme changes */
+#career-content, #personal-content {
+  /* Ensure content sections don't cause layout shifts when hidden/shown */
+  will-change: auto;
+  contain: layout style;
+  /* OPTIMIZED: Use consistent positioning approach */
+  transition: none !important; /* Disable transitions during theme change */
+}
+
+/* Prevent content jumping by maintaining consistent space */
+#career-content, #personal-content {
+  min-height: 0; /* Reset any conflicting min-heights */
+  width: 100%; /* Ensure full width when visible */
+}
+
+/* Optimize about content for fast switching */
+#about-content {
+  contain: layout style;
+  will-change: auto;
+}
+
+/* Mobile-specific anti-jump optimizations */
+@media (max-width: 768px) {
+  /* Force hardware acceleration for smoother transitions */
+  .theme-toggle, #career-content, #personal-content, #about-content {
+    transform: translateZ(0);
+  }
+  
+  /* Prevent any potential height changes from causing scroll jumps */
+  body {
+    scroll-behavior: auto !important;
+  }
+  
+  /* Lock scroll during theme transitions */
+  body.theme-changing {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
   }
 }
