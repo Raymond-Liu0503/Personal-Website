@@ -405,6 +405,9 @@ function initMobileOptimizations() {
   // Update theme color meta tag
   updateThemeColorMeta();
   
+  // PRIORITY: Fix mobile scroll issues first
+  fixMobileScrollIssues();
+  
   // Initialize touch interactions
   initTouchInteractions();
   
@@ -432,9 +435,33 @@ function initTouchInteractions() {
   const touchElements = document.querySelectorAll('.card, .project-card, .gallery-item, .contact-link, .theme-toggle');
   
   touchElements.forEach(element => {
-    element.addEventListener('touchstart', function() {
-      this.style.transform = 'scale(0.98)';
-      this.style.transition = 'transform 0.1s ease';
+    let touchStartTime = 0;
+    let touchStartY = 0;
+    let isScrolling = false;
+    
+    element.addEventListener('touchstart', function(e) {
+      touchStartTime = Date.now();
+      touchStartY = e.touches[0].clientY;
+      isScrolling = false;
+      
+      // Don't apply transform immediately - wait to see if user is scrolling
+      setTimeout(() => {
+        if (!isScrolling && Date.now() - touchStartTime < 100) {
+          this.style.transform = 'scale(0.98)';
+          this.style.transition = 'transform 0.1s ease';
+        }
+      }, 50);
+    }, { passive: true });
+    
+    element.addEventListener('touchmove', function(e) {
+      // If user moves more than 10px vertically, they're probably scrolling
+      const currentY = e.touches[0].clientY;
+      if (Math.abs(currentY - touchStartY) > 10) {
+        isScrolling = true;
+        // Reset any transforms if scrolling detected
+        this.style.transform = '';
+        this.style.transition = '';
+      }
     }, { passive: true });
     
     element.addEventListener('touchend', function() {
@@ -554,9 +581,28 @@ function handleIOSOptimizations() {
     window.addEventListener('resize', setViewportHeight);
     setViewportHeight();
     
-    // Prevent iOS bounce scroll
+    // FIXED: More selective iOS bounce scroll prevention
+    // Only prevent bounce on the body itself, not on scrollable content
+    let startY = 0;
+    
+    document.body.addEventListener('touchstart', function(e) {
+      startY = e.touches[0].clientY;
+    }, { passive: true });
+    
     document.body.addEventListener('touchmove', function(e) {
-      if (e.target === document.body || e.target === document.documentElement) {
+      // Only prevent scrolling if we're trying to scroll past the boundaries
+      const currentY = e.touches[0].clientY;
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      
+      // Allow normal scrolling
+      if (scrollTop > 0 && scrollTop < maxScroll) {
+        return;
+      }
+      
+      // Only prevent bounce at the very top or bottom
+      if ((scrollTop <= 0 && currentY > startY) || 
+          (scrollTop >= maxScroll && currentY < startY)) {
         e.preventDefault();
       }
     }, { passive: false });
@@ -787,3 +833,48 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize mobile optimizations
   initMobileOptimizations();
 });
+
+// ============================================
+// MOBILE SCROLL FIX FUNCTIONS
+// ============================================
+
+function fixMobileScrollIssues() {
+  // Ensure body and html allow scrolling
+  document.documentElement.style.touchAction = 'pan-y';
+  document.body.style.touchAction = 'pan-y';
+  
+  // Fix any elements that might be blocking scroll
+  const allElements = document.querySelectorAll('*');
+  allElements.forEach(element => {
+    const computedStyle = window.getComputedStyle(element);
+    
+    // If an element prevents all touch actions, allow at least pan-y for scrolling
+    if (computedStyle.touchAction === 'none') {
+      // Only override if it's not specifically needed (like for interactive elements)
+      if (!element.classList.contains('interactive-image-container') &&
+          !element.classList.contains('theme-toggle')) {
+        element.style.touchAction = 'pan-y';
+      }
+    }
+  });
+  
+  // Ensure scroll events work properly
+  let isScrolling = false;
+  let scrollTimeout;
+  
+  window.addEventListener('scroll', function() {
+    if (!isScrolling) {
+      isScrolling = true;
+      document.body.classList.add('is-scrolling');
+    }
+    
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(function() {
+      isScrolling = false;
+      document.body.classList.remove('is-scrolling');
+    }, 150);
+  }, { passive: true });
+  
+  // Debug scroll issues
+  console.log('📱 Mobile scroll fixes applied');
+}

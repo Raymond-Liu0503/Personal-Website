@@ -1392,14 +1392,11 @@ body.loaded {
    COMPREHENSIVE MOBILE OPTIMIZATIONS
    ============================================ */
 
-/* Enhanced Touch Interactions */
+/* Enhanced Touch Interactions - Fixed for better scrolling */
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  /* REMOVED: Overly aggressive user-select that can interfere with scrolling */
 }
 
 /* Allow text selection for readable content */
@@ -1410,11 +1407,22 @@ p, h1, h2, h3, h4, h5, h6, .gallery-caption, .overlay-text {
   user-select: text;
 }
 
-/* Touch Target Optimization */
+/* Allow scrolling on all elements by default */
+html, body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Ensure smooth scrolling */
+  touch-action: pan-y;
+}
+
+/* Touch Target Optimization - Fixed for better scrolling */
 .theme-toggle, .contact-link, .project-card, .gallery-item {
   min-height: 44px;
   min-width: 44px;
-  touch-action: manipulation;
+  /* CHANGED: Allow both manipulation and scroll */
+  touch-action: pan-y manipulation;
 }
 
 /* Mobile Typography and Layout Optimization */
@@ -1523,12 +1531,12 @@ p, h1, h2, h3, h4, h5, h6, .gallery-caption, .overlay-text {
   /* Mobile About Section */  .about-section {
     margin: 80px 0 100px 0;
     padding: 0 20px;
-  }
-  .interactive-image-container {
+  }  .interactive-image-container {
     width: min(250px, 80vw);
     height: min(250px, 80vw);
     padding: 12px 12px 40px 12px;
-    touch-action: none;
+    /* FIXED: Allow scrolling while preventing other gestures */
+    touch-action: pan-y;
   }
 
   /* Mobile Timeline */
@@ -2308,5 +2316,46 @@ body:has(.main-nav)::before {
   75% {
     transform: translateY(-40px) translateX(15px) rotate(2deg);
     opacity: 0.6;
+  }
+}
+
+/* ============================================
+   MOBILE SCROLL FIX STYLES
+   ============================================ */
+
+/* Ensure all mobile devices can scroll properly */
+@media (max-width: 768px) {
+  /* Force proper scrolling behavior */
+  html {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  body {
+    overflow-y: auto !important;
+    overscroll-behavior: auto;
+  }
+  
+  /* Prevent scroll blocking on key elements */
+  .bg-elements, .header, main, section, article {
+    touch-action: pan-y !important;
+  }
+  
+  /* Only specific interactive elements should restrict touch */
+  .theme-toggle {
+    touch-action: manipulation;
+  }
+  
+  .interactive-image-container {
+    touch-action: pan-y manipulation;
+  }
+    /* Debug: Show when scrolling is active */
+  body.is-scrolling * {
+    pointer-events: none;
+  }
+  
+  /* Fix for momentum scrolling on iOS */
+  * {
+    -webkit-overflow-scrolling: touch;
   }
 }
