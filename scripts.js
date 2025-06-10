@@ -12,24 +12,22 @@ function toggleTheme() {
 
   // Store current scroll position
   const currentScrollY = window.pageYOffset;
+  console.log('📍 Current scroll position:', currentScrollY);
 
-  // --- Enhanced scroll preservation: Apply fixed position ---
-  const originalBodyStyle = {
-    position: body.style.position,
-    top: body.style.top,
-    width: body.style.width,
-    overflow: body.style.overflow,
-  };
-  const originalHtmlScrollBehavior = document.documentElement.style.scrollBehavior;
-
-  body.style.position = 'fixed';
-  body.style.top = `-${currentScrollY}px`;
-  body.style.width = '100%'; // Ensure full width while fixed
-  body.style.overflow = 'hidden'; // Prevent scrollbars on body itself
-  document.documentElement.style.scrollBehavior = 'auto'; // Disable smooth scroll during operation
+  // Simpler scroll preservation approach for mobile
+  const isMobile = window.innerWidth <= 768;
+  
+  if (isMobile) {
+    // Mobile: temporarily prevent scrolling during theme change
+    body.style.position = 'fixed';
+    body.style.top = `-${currentScrollY}px`;
+    body.style.width = '100%';
+    body.style.overflow = 'hidden';
+  }
 
   // Toggle theme
   isLightTheme = !isLightTheme;
+  console.log('🔄 Theme toggled, isLightTheme:', isLightTheme);
 
   if (isLightTheme) {
     // Switch to light theme (Personal)
@@ -63,18 +61,28 @@ function toggleTheme() {
   updateBackgroundElements(isLightTheme ? 'light' : 'dark');
   updateThemeColorMeta();
   
-  // --- Enhanced scroll preservation: Restore styles and scroll position ---
-  setTimeout(() => {
-    body.style.position = originalBodyStyle.position;
-    body.style.top = originalBodyStyle.top;
-    body.style.width = originalBodyStyle.width;
-    body.style.overflow = originalBodyStyle.overflow;
-    document.documentElement.style.scrollBehavior = originalHtmlScrollBehavior;
-
-    window.scrollTo({ top: currentScrollY, left: 0, behavior: 'instant' });
-    
-    console.log('🎨 Fast theme toggle completed, scroll restored.');
-  }, 0); // Use 0ms delay
+  // Restore scroll position
+  if (isMobile) {
+    // Mobile: restore scrolling and position
+    requestAnimationFrame(() => {
+      body.style.position = '';
+      body.style.top = '';
+      body.style.width = '';
+      body.style.overflow = '';
+      window.scrollTo(0, currentScrollY);
+      console.log('📱 Mobile scroll restored to:', currentScrollY);
+    });
+  } else {
+    // Desktop: simple scroll check
+    setTimeout(() => {
+      if (Math.abs(window.pageYOffset - currentScrollY) > 10) {
+        window.scrollTo(0, currentScrollY);
+        console.log('🖥️ Desktop scroll corrected to:', currentScrollY);
+      }
+    }, 50);
+  }
+  
+  console.log('✅ Theme toggle completed');
 }
 
 // Function to update theme color meta tag for mobile
@@ -89,51 +97,59 @@ function updateThemeColorMeta() {
 
 // Function to update background elements visibility with mobile optimization - ULTRA FAST
 function updateBackgroundElements(theme) {
+  console.log('🌟 Updating background elements for theme:', theme);
   const leaves = document.querySelectorAll('.leaf');
   const petals = document.querySelectorAll('.petal');
+  console.log('🍃 Found leaves:', leaves.length);
+  console.log('🌸 Found petals:', petals.length);
   const isMobile = window.innerWidth <= 768;
+  console.log('📱 Is mobile:', isMobile);
 
   // Reduce background element count on mobile for better performance
   const maxElements = isMobile ? 6 : 10; // Further reduced for faster switching
-
   // Use CSS classes for instant switching AND direct style updates for reliability
   if (theme === 'light') {
+    console.log('🌸 Switching to light theme (petals)');
     // Show petals, hide leaves - use classes for instant switching
     document.body.classList.add('show-petals');
     document.body.classList.remove('show-leaves');
     
-    // Ensure petals are visible with direct style updates
+    // Ensure petals are visible with direct style updates using !important
     petals.forEach((petal, index) => {
       if (index < maxElements || !isMobile) {
-        petal.style.display = 'block';
-        petal.style.opacity = isMobile ? '0.4' : '0.7';
+        petal.style.setProperty('display', 'block', 'important');
+        petal.style.setProperty('opacity', isMobile ? '0.4' : '0.7', 'important');
+        console.log(`🌸 Showing petal ${index}:`, petal.style.display, petal.style.opacity);
       }
     });
     
     // Hide leaves
     leaves.forEach(leaf => {
-      leaf.style.display = 'none';
-      leaf.style.opacity = '0';
+      leaf.style.setProperty('display', 'none', 'important');
+      leaf.style.setProperty('opacity', '0', 'important');
     });
   } else {
+    console.log('🍃 Switching to dark theme (leaves)');
     // Show leaves, hide petals - use classes for instant switching  
     document.body.classList.add('show-leaves');
     document.body.classList.remove('show-petals');
     
-    // Ensure leaves are visible with direct style updates
+    // Ensure leaves are visible with direct style updates using !important
     leaves.forEach((leaf, index) => {
       if (index < maxElements || !isMobile) {
-        leaf.style.display = 'block';
-        leaf.style.opacity = isMobile ? '0.3' : '0.6';
+        leaf.style.setProperty('display', 'block', 'important');
+        leaf.style.setProperty('opacity', isMobile ? '0.3' : '0.6', 'important');
+        console.log(`🍃 Showing leaf ${index}:`, leaf.style.display, leaf.style.opacity);
       }
     });
     
     // Hide petals
     petals.forEach(petal => {
-      petal.style.display = 'none';
-      petal.style.opacity = '0';
+      petal.style.setProperty('display', 'none', 'important');
+      petal.style.setProperty('opacity', '0', 'important');
     });
   }
+  console.log('✅ Background elements update complete');
 }// Simple Polaroid Interactions - Enhanced Mobile Optimized
 function initializePolaroidEffects() {
   const galleryItems = document.querySelectorAll(".gallery-item");
@@ -760,11 +776,10 @@ function initBatteryOptimizations() {
 
 function applyPowerSavingMode() {
   // Reduce all animations to minimal
-  const style = document.createElement('style');
-  style.textContent = `
+  const style = document.createElement('style');  style.textContent = `
     .leaf, .petal {
       animation-duration: 40s !important;
-      opacity: 0.2 !important;
+      /* Don't override opacity - let theme visibility control it */
     }
     * {
       transition-duration: 0.1s !important;
@@ -790,8 +805,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add theme toggle event listener
   const themeSlider = document.getElementById("theme-slider");
+  console.log('🔍 Theme slider element:', themeSlider);
   if (themeSlider) {
-    themeSlider.addEventListener("click", toggleTheme);
+    console.log('✅ Adding click event listener to theme slider');
+    themeSlider.addEventListener("click", function() {
+      console.log('🖱️ Theme slider clicked!');
+      toggleTheme();
+    });
+  } else {
+    console.error('❌ Theme slider element not found!');
   }
 
   // Smooth scrolling for internal links
