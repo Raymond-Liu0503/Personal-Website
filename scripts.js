@@ -19,14 +19,9 @@ function toggleTheme() {
 
     // Switch content
     careerContent.style.display = "none";
-    personalContent.style.display = "block";
-
-    // Update about text for personal theme
+    personalContent.style.display = "block";    // Update about text for personal theme
     aboutContent.innerHTML = `
-                  Beyond my technical pursuits, I'm someone who finds joy in life's diverse experiences. 
-                  From capturing the perfect shot through my camera lens to the adrenaline rush of competitive sports, 
-                  I believe in living life to the fullest. My adventures have taken me from the serene landscapes of Switzerland 
-                  to the bustling streets of Paris, always seeking new perspectives and memorable moments to cherish.
+                  Outside of my career, I have a bunch of hobbies I enjoy spending my time on, like photography, sports (Hockey, football, badminton, etc), travelling, and so many other spontaneous activities. I love exploring new places, capturing moments through my camera lens, and enjoying the thrill of outdoor adventures. Here are some snapshots of my personal life that reflect my passions and interests, and make sure to check out my <a href="https://www.instagram.com/raymliu_photography/profilecard/?igsh=MW00MWc4djhjaHFxcA==" class="instagram-link">photography page</a>!
               `;
 
     // Force update background elements visibility
@@ -49,14 +44,27 @@ function toggleTheme() {
                   learn new technologies and take on challenging projects.
               `;
 
-    // Force update background elements visibility
+  // Force update background elements visibility
     updateBackgroundElements('dark');
   }
+
+  // Update theme color for mobile browsers
+  updateThemeColorMeta();
 
   // Reset animations after theme change
   setTimeout(() => {
     initializeAnimations();
   }, 300);
+}
+
+// Function to update theme color meta tag for mobile
+function updateThemeColorMeta() {
+  const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+  const isDark = document.body.classList.contains('dark-theme');
+  
+  if (metaThemeColor) {
+    metaThemeColor.setAttribute('content', isDark ? '#2c1810' : '#fdf2f8');
+  }
 }
 
 // Function to update background elements visibility
@@ -184,11 +192,14 @@ function initializeMouseTracking() {
 
 // Initialize all animations
 function initializeAnimations() {
+  console.log('🎭 InitializeAnimations called');
   initializePolaroidEffects();
   initializeTimelineAnimations();
   initializeProjectCard3DEffects(); // Call the new function
   initializeMouseTracking();
+  console.log('🎯 About to call initializeInteractiveImage()');
   initializeInteractiveImage(); // Add interactive image effects
+  console.log('✅ All animations initialized');
 }
 
 // Enhanced scroll effects
@@ -221,36 +232,246 @@ function initializeScrollEffects() {
   });
 }
 
-// Interactive About Image Effects
+// Interactive About Image Effects - Working Mouse Tilt Animation
 function initializeInteractiveImage() {
+  console.log('🎯 Initializing interactive image...');
+  
   const imageContainer = document.querySelector('.interactive-image-container');
   
-  if (imageContainer) {
-    // Remove click functionality - image is now unclickable
-    // Only keep mouse move tilt effect
-    imageContainer.addEventListener('mousemove', (e) => {
-      const rect = imageContainer.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      
-      const rotateX = (y - centerY) / centerY * -10;
-      const rotateY = (x - centerX) / centerX * 10;
-      
-      imageContainer.style.transform = `scale(1.05) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-    });
-
-    imageContainer.addEventListener('mouseleave', () => {
-      imageContainer.style.transform = '';
-    });
+  if (!imageContainer) {
+    console.error('❌ Image container not found');
+    return;
   }
+  
+  console.log('✅ Container found, setting up mouse tilt animation...');
+  
+  let isHovering = false;
+  
+  // Mouse enter - start tracking
+  imageContainer.addEventListener('mouseenter', function() {
+    console.log('🎯 Mouse entered - starting tilt animation');
+    isHovering = true;
+    imageContainer.style.transition = 'none';
+  });
+  
+  // Mouse move - apply tilt based on position
+  imageContainer.addEventListener('mousemove', function(e) {
+    if (!isHovering) return;
+    
+    const rect = imageContainer.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    const mouseX = e.clientX - centerX;
+    const mouseY = e.clientY - centerY;
+    
+    // Calculate tilt angles
+    const rotateX = (mouseY / rect.height) * -15; // Vertical tilt
+    const rotateY = (mouseX / rect.width) * 15;   // Horizontal tilt
+    
+    // Apply 3D transform
+    imageContainer.style.transform = `
+      rotateX(${rotateX}deg) 
+      rotateY(${rotateY}deg) 
+      scale(1.05) 
+      rotate(-2deg)
+    `;
+    imageContainer.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.3)';
+  });
+  
+  // Mouse leave - reset to original state
+  imageContainer.addEventListener('mouseleave', function() {
+    console.log('👋 Mouse left - resetting');
+    isHovering = false;
+    imageContainer.style.transition = 'all 0.5s ease';
+    imageContainer.style.transform = 'rotate(-2deg)';
+    imageContainer.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1), 0 16px 32px rgba(0, 0, 0, 0.1)';
+  });
+  
+  console.log('✅ Mouse tilt animation setup complete');
+}
+
+// ============================================
+// MOBILE OPTIMIZATION FUNCTIONS
+// ============================================
+
+function initMobileOptimizations() {
+  // Update theme color meta tag
+  updateThemeColorMeta();
+  
+  // Initialize touch interactions
+  initTouchInteractions();
+  
+  // Optimize scroll performance
+  optimizeScrollPerformance();
+  
+  // Handle orientation changes
+  handleOrientationChange();
+  
+  // iOS specific optimizations
+  handleIOSOptimizations();
+  
+  // Handle mobile keyboard
+  handleMobileKeyboard();
+}
+
+function initTouchInteractions() {
+  // Add touch feedback to interactive elements
+  const touchElements = document.querySelectorAll('.card, .project-card, .gallery-item, .contact-link, .theme-toggle');
+  
+  touchElements.forEach(element => {
+    element.addEventListener('touchstart', function() {
+      this.style.transform = 'scale(0.98)';
+      this.style.transition = 'transform 0.1s ease';
+    }, { passive: true });
+    
+    element.addEventListener('touchend', function() {
+      setTimeout(() => {
+        this.style.transform = '';
+        this.style.transition = '';
+      }, 100);
+    }, { passive: true });
+    
+    element.addEventListener('touchcancel', function() {
+      this.style.transform = '';
+      this.style.transition = '';
+    }, { passive: true });
+  });
+  
+  // Prevent double-tap zoom on theme toggle
+  const themeToggle = document.querySelector('.theme-toggle');
+  if (themeToggle) {
+    let lastTouchEnd = 0;
+    themeToggle.addEventListener('touchend', function(e) {
+      const now = new Date().getTime();
+      if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+  }
+}
+
+function optimizeScrollPerformance() {
+  let ticking = false;
+  
+  function updateScrollEffects() {
+    const scrolled = window.pageYOffset;
+    const parallax = document.querySelector(".bg-elements");
+    const header = document.querySelector(".header");
+
+    // Throttled parallax effects for mobile
+    if (window.innerWidth > 768) {
+      if (parallax) {
+        const speed = scrolled * 0.3; // Reduced for mobile performance
+        parallax.style.transform = `translateY(${speed}px)`;
+      }
+
+      if (header) {
+        const headerParallax = scrolled * 0.2; // Reduced for mobile
+        header.style.transform = `translateY(${headerParallax}px)`;
+      }
+    }
+
+    // Update scroll progress
+    const winHeight = window.innerHeight;
+    const docHeight = document.documentElement.scrollHeight;
+    const scrollPercent = scrolled / (docHeight - winHeight);
+    document.documentElement.style.setProperty("--scroll-progress", scrollPercent);
+    
+    ticking = false;
+  }
+
+  function requestScrollUpdate() {
+    if (!ticking) {
+      requestAnimationFrame(updateScrollEffects);
+      ticking = true;
+    }
+  }
+
+  // Use passive listeners for better performance
+  window.addEventListener('scroll', requestScrollUpdate, { passive: true });
+}
+
+function handleOrientationChange() {
+  const handleOrientation = () => {
+    // Update viewport height for mobile browsers
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+    
+    // Update theme color on orientation change
+    setTimeout(updateThemeColorMeta, 100);
+    
+    // Trigger a reflow to fix layout issues
+    document.body.style.height = window.innerHeight + 'px';
+    setTimeout(() => {
+      document.body.style.height = '';
+    }, 100);
+  };
+
+  // Handle both orientationchange and resize
+  window.addEventListener('orientationchange', handleOrientation);
+  window.addEventListener('resize', handleOrientation);
+  
+  // Initial call
+  handleOrientation();
+}
+
+function handleIOSOptimizations() {
+  // Detect iOS
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  
+  if (isIOS) {
+    // Fix iOS viewport units
+    const setViewportHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+    
+    window.addEventListener('resize', setViewportHeight);
+    setViewportHeight();
+    
+    // Prevent iOS bounce scroll
+    document.body.addEventListener('touchmove', function(e) {
+      if (e.target === document.body || e.target === document.documentElement) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+  }
+}
+
+function handleMobileKeyboard() {
+  // Handle virtual keyboard appearance
+  const initialViewportHeight = window.innerHeight;
+  
+  const handleViewportChange = () => {
+    const currentViewportHeight = window.innerHeight;
+    const heightDifference = initialViewportHeight - currentViewportHeight;
+    
+    // If viewport height decreased significantly, keyboard is likely open
+    if (heightDifference > 150) {
+      document.body.classList.add('keyboard-open');
+    } else {
+      document.body.classList.remove('keyboard-open');
+    }
+  };
+
+  window.addEventListener('resize', handleViewportChange);
 }
 
 // Main initialization
 document.addEventListener("DOMContentLoaded", function () {
+  console.log('🚀 DOM Content Loaded - Starting initialization');
+  
   // Initialize background elements visibility based on initial theme
   updateBackgroundElements('dark'); // Default is dark theme
+
+  // Initialize mobile optimizations
+  initMobileOptimizations();
+
+  // Initialize all animations
+  console.log('🎬 Calling initializeAnimations()');
+  initializeAnimations();
 
   // Add theme toggle event listener
   const themeSlider = document.getElementById("theme-slider");
@@ -314,4 +535,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add loading animation completion
   document.body.classList.add("loaded");
+
+  // Initialize mobile optimizations
+  initMobileOptimizations();
 });

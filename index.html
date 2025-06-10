@@ -2,7 +2,18 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="theme-color" content="#2c1810" />
+    <meta name="apple-mobile-web-app-title" content="Raymond Liu" />
     <title>Raymond Liu | Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -75,15 +86,15 @@
             <div class="interactive-image-container">
               <div class="image-border-effect"></div>
               <img
-                src="media/polaroid1-edited.png"
+                src="media/IMG_0116.jpg"
                 alt="Raymond Liu"
                 class="profile-image"
                 onerror="this.src='https://via.placeholder.com/300x300/ddd/666?text=Raymond+Liu'"
               />
               <div class="image-overlay">
                 <div class="overlay-text">
-                  <h4>Raymond Liu</h4>
-                  <p>Computer Science Student</p>
+                  <h4>Me!</h4>
+                  <p>Pictured here in Pompeii</p>
                 </div>
               </div>
             </div>
@@ -106,9 +117,8 @@
                 <h4>Software Engineer Intern</h4>
                 <h5>Ciena | May 2024 - December 2024</h5>
                 <p>
-                  Built ETL pipeline with Python and Kafka processing 500+ daily
-                  records. Developed automated tools reducing analysis time by
-                  60-85% and enhanced system performance monitoring with C/C++.
+                  Worked on the RLS performance and automation team. Developed
+                  automated tools and enhanced system performance monitoring.
                 </p>
               </div>
             </div>
@@ -117,9 +127,8 @@
                 <h4>Software Developer Intern</h4>
                 <h5>Viitai | June 2023 - August 2023</h5>
                 <p>
-                  Designed UI/UX for ShellTOC Help Center using JavaScript,
-                  HTML5, and CSS. Improved clinical trial coordination workflow
-                  and enhanced system reliability through Java software testing.
+                  Contributed with mainly front-end work and backend testing.
+                  Designed UI/UX and developed ShellTOC Help Center.
                 </p>
               </div>
             </div>
@@ -147,10 +156,7 @@
                 UI using Pug.
               </p>
             </a>
-            <a
-              href="https://dango-store.vercel.app/"
-              class="project-card"
-            >
+            <a href="https://dango-store.vercel.app/" class="project-card">
               <h4>Dango E-Commerce Store</h4>
               <p>
                 A modern Japanese dessert e-commerce store built with React.
@@ -162,22 +168,6 @@
         </div>
         <!-- Personal Content (Hidden by default) -->
         <div id="personal-content">
-          <h2 class="section-title">Beyond the Screen</h2>
-          <p class="personal-intro-text">
-            Outside of my career, I have a bunch of hobbies I enjoy spending my
-            time on, like photography, sports (Hockey, football, badminton,
-            etc), travelling, and so many other spontaneous activities. I love
-            exploring new places, capturing moments through my camera lens, and
-            enjoying the thrill of outdoor adventures. Here are some snapshots
-            of my personal life that reflect my passions and interests, and make
-            sure to check out my
-            <a
-              href="https://www.instagram.com/raymliu_photography/profilecard/?igsh=MW00MWc4djhjaHFxcA=="
-              class="instagram-link"
-              >photography page</a
-            >!
-          </p>
-
           <!-- Personal Gallery -->
           <div class="gallery">
             <div class="gallery-item">
@@ -259,7 +249,11 @@
             target="_blank"
             class="contact-link"
           >
-            <span>💼</span>
+            <img
+              src="media/LI-In-Bug.png"
+              alt="LinkedIn"
+              class="contact-icon"
+            />
             <span>LinkedIn</span>
           </a>
           <a
@@ -267,7 +261,11 @@
             target="_blank"
             class="contact-link"
           >
-            <span>💻</span>
+            <img
+              src="media/github-mark-white.png"
+              alt="GitHub"
+              class="contact-icon"
+            />
             <span>GitHub</span>
           </a>
         </div>
