@@ -2415,12 +2415,18 @@ body:has(.main-nav)::before {
     transition: transform 0.15s ease !important;
   }
   
-  /* Ensure smooth scrolling */
+  /* Ensure smooth scrolling and prevent bounce */
   html {
     scroll-behavior: auto;
   }
   
   body {
     overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent any layout shifts during theme changes */
+  * {
+    will-change: auto;
   }
 }

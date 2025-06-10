@@ -3,15 +3,32 @@ let mouseX = 0;
 let mouseY = 0;
 
 function toggleTheme() {
-  // Simple, fast theme switching without complex locking
-  const currentScrollY = window.pageYOffset;
-  
+  console.log('🎨 Starting fast theme toggle...');
   const body = document.body;
   const sliderButton = document.querySelector(".slider-button");
   const careerContent = document.getElementById("career-content");
   const personalContent = document.getElementById("personal-content");
   const aboutContent = document.getElementById("about-content");
 
+  // Store current scroll position
+  const currentScrollY = window.pageYOffset;
+
+  // --- Enhanced scroll preservation: Apply fixed position ---
+  const originalBodyStyle = {
+    position: body.style.position,
+    top: body.style.top,
+    width: body.style.width,
+    overflow: body.style.overflow,
+  };
+  const originalHtmlScrollBehavior = document.documentElement.style.scrollBehavior;
+
+  body.style.position = 'fixed';
+  body.style.top = `-${currentScrollY}px`;
+  body.style.width = '100%'; // Ensure full width while fixed
+  body.style.overflow = 'hidden'; // Prevent scrollbars on body itself
+  document.documentElement.style.scrollBehavior = 'auto'; // Disable smooth scroll during operation
+
+  // Toggle theme
   isLightTheme = !isLightTheme;
 
   if (isLightTheme) {
@@ -46,14 +63,18 @@ function toggleTheme() {
   updateBackgroundElements(isLightTheme ? 'light' : 'dark');
   updateThemeColorMeta();
   
-  // Simple scroll preservation - just ensure position stays the same
+  // --- Enhanced scroll preservation: Restore styles and scroll position ---
   setTimeout(() => {
-    if (Math.abs(window.pageYOffset - currentScrollY) > 10) {
-      window.scrollTo(0, currentScrollY);
-    }
-  }, 50);
-  
-  console.log('🎨 Fast theme toggle completed');
+    body.style.position = originalBodyStyle.position;
+    body.style.top = originalBodyStyle.top;
+    body.style.width = originalBodyStyle.width;
+    body.style.overflow = originalBodyStyle.overflow;
+    document.documentElement.style.scrollBehavior = originalHtmlScrollBehavior;
+
+    window.scrollTo({ top: currentScrollY, left: 0, behavior: 'instant' });
+    
+    console.log('🎨 Fast theme toggle completed, scroll restored.');
+  }, 0); // Use 0ms delay
 }
 
 // Function to update theme color meta tag for mobile
@@ -75,15 +96,43 @@ function updateBackgroundElements(theme) {
   // Reduce background element count on mobile for better performance
   const maxElements = isMobile ? 6 : 10; // Further reduced for faster switching
 
-  // Use CSS classes for instant switching instead of individual style changes
+  // Use CSS classes for instant switching AND direct style updates for reliability
   if (theme === 'light') {
     // Show petals, hide leaves - use classes for instant switching
     document.body.classList.add('show-petals');
     document.body.classList.remove('show-leaves');
+    
+    // Ensure petals are visible with direct style updates
+    petals.forEach((petal, index) => {
+      if (index < maxElements || !isMobile) {
+        petal.style.display = 'block';
+        petal.style.opacity = isMobile ? '0.4' : '0.7';
+      }
+    });
+    
+    // Hide leaves
+    leaves.forEach(leaf => {
+      leaf.style.display = 'none';
+      leaf.style.opacity = '0';
+    });
   } else {
     // Show leaves, hide petals - use classes for instant switching  
     document.body.classList.add('show-leaves');
     document.body.classList.remove('show-petals');
+    
+    // Ensure leaves are visible with direct style updates
+    leaves.forEach((leaf, index) => {
+      if (index < maxElements || !isMobile) {
+        leaf.style.display = 'block';
+        leaf.style.opacity = isMobile ? '0.3' : '0.6';
+      }
+    });
+    
+    // Hide petals
+    petals.forEach(petal => {
+      petal.style.display = 'none';
+      petal.style.opacity = '0';
+    });
   }
 }// Simple Polaroid Interactions - Enhanced Mobile Optimized
 function initializePolaroidEffects() {
