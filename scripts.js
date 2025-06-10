@@ -3,58 +3,60 @@ let mouseX = 0;
 let mouseY = 0;
 
 function toggleTheme() {
-  const body = document.body;
-  const sliderButton = document.querySelector(".slider-button");
-  const careerContent = document.getElementById("career-content");
-  const personalContent = document.getElementById("personal-content");
-  const aboutContent = document.getElementById("about-content");
+  // Use the scroll preservation function to wrap all theme changes
+  preserveScrollPosition(() => {
+    const body = document.body;
+    const sliderButton = document.querySelector(".slider-button");
+    const careerContent = document.getElementById("career-content");
+    const personalContent = document.getElementById("personal-content");
+    const aboutContent = document.getElementById("about-content");
 
-  isLightTheme = !isLightTheme;
+    isLightTheme = !isLightTheme;
 
-  if (isLightTheme) {
-    // Switch to light theme (Personal)
-    body.classList.remove("dark-theme");
-    body.classList.add("light-theme");
-    sliderButton.innerHTML = "🌸";
+    if (isLightTheme) {
+      // Switch to light theme (Personal)
+      body.classList.remove("dark-theme");
+      body.classList.add("light-theme");
+      sliderButton.innerHTML = "🌸";
 
-    // Switch content
-    careerContent.style.display = "none";
-    personalContent.style.display = "block";    // Update about text for personal theme
-    aboutContent.innerHTML = `
-                  Outside of my career, I have a bunch of hobbies I enjoy spending my time on, like photography, sports (Hockey, football, badminton, etc), travelling, and so many other spontaneous activities. I love exploring new places, capturing moments through my camera lens, and enjoying the thrill of outdoor adventures. Here are some snapshots of my personal life that reflect my passions and interests, and make sure to check out my <a href="https://www.instagram.com/raymliu_photography/profilecard/?igsh=MW00MWc4djhjaHFxcA==" class="instagram-link">photography page</a>!
-              `;
+      // Switch content
+      careerContent.style.display = "none";
+      personalContent.style.display = "block";
+      
+      // Update about text for personal theme
+      aboutContent.innerHTML = `
+                    Outside of my career, I have a bunch of hobbies I enjoy spending my time on, like photography, sports (Hockey, football, badminton, etc), travelling, and so many other spontaneous activities. I love exploring new places, capturing moments through my camera lens, and enjoying the thrill of outdoor adventures. Here are some snapshots of my personal life that reflect my passions and interests, and make sure to check out my <a href="https://www.instagram.com/raymliu_photography/profilecard/?igsh=MW00MWc4djhjaHFxcA==" class="instagram-link">photography page</a>!
+                `;
 
-    // Force update background elements visibility
-    updateBackgroundElements('light');
-  } else {
-    // Switch to dark theme (Career)
-    body.classList.remove("light-theme");
-    body.classList.add("dark-theme");
-    sliderButton.innerHTML = "🍂";
+      // Force update background elements visibility
+      updateBackgroundElements('light');
+    } else {
+      // Switch to dark theme (Career)
+      body.classList.remove("light-theme");
+      body.classList.add("dark-theme");
+      sliderButton.innerHTML = "🍂";
 
-    // Switch content
-    careerContent.style.display = "block";
-    personalContent.style.display = "none";
+      // Switch content
+      careerContent.style.display = "block";
+      personalContent.style.display = "none";
 
-    // Update about text for career theme
-    aboutContent.innerHTML = `
-                  As a third-year Computer Science student at Carleton University with a minor in Statistics, 
-                  I am passionate about developing impactful software on both the frontend and backend. 
-                  I have a love for designing interactive and unique user interfaces, and I am always eager to 
-                  learn new technologies and take on challenging projects.
-              `;
+      // Update about text for career theme
+      aboutContent.innerHTML = `
+                    As a third-year Computer Science student at Carleton University with a minor in Statistics, 
+                    I am passionate about developing impactful software on both the frontend and backend. 
+                    I have a love for designing interactive and unique user interfaces, and I am always eager to 
+                    learn new technologies and take on challenging projects.
+                `;
 
-  // Force update background elements visibility
-    updateBackgroundElements('dark');
-  }
-
-  // Update theme color for mobile browsers
-  updateThemeColorMeta();
-
-  // Reset animations after theme change
-  setTimeout(() => {
-    initializeAnimations();
-  }, 300);
+      // Force update background elements visibility
+      updateBackgroundElements('dark');
+    }
+    
+    // Update theme color for mobile browsers
+    updateThemeColorMeta();
+  });
+  
+  console.log('🎨 Theme toggled with scroll preservation');
 }
 
 // Function to update theme color meta tag for mobile
@@ -789,7 +791,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Initialize enhanced scroll effects
   initializeScrollEffects();
-
   // Enhanced intersection observer for animations
   const observerOptions = {
     threshold: 0.1,
@@ -798,15 +799,21 @@ document.addEventListener("DOMContentLoaded", function () {
   const observer = new IntersectionObserver(function (entries) {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        entry.target.style.opacity = "1";
-        entry.target.style.transform = "translateY(0)";
+        // FIXED: Only animate if element hasn't been animated already
+        const isAlreadyVisible = entry.target.style.opacity === "1" || 
+                                parseFloat(getComputedStyle(entry.target).opacity) === 1;
         
-        // Add specific animations based on element type
-        if (entry.target.classList.contains("card")) {
-          entry.target.style.animation = "fadeInUp 0.8s ease-out forwards";
-        }
-        if (entry.target.classList.contains("project-card")) {
-          entry.target.style.animation = "fadeInUp 0.6s ease-out forwards";
+        if (!isAlreadyVisible) {
+          entry.target.style.opacity = "1";
+          entry.target.style.transform = "translateY(0)";
+          
+          // Add specific animations based on element type
+          if (entry.target.classList.contains("card")) {
+            entry.target.style.animation = "fadeInUp 0.8s ease-out forwards";
+          }
+          if (entry.target.classList.contains("project-card")) {
+            entry.target.style.animation = "fadeInUp 0.6s ease-out forwards";
+          }
         }
       }
     });
@@ -833,6 +840,31 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize mobile optimizations
   initMobileOptimizations();
 });
+
+// ============================================
+// SCROLL POSITION PRESERVATION
+// ============================================
+
+function preserveScrollPosition(callback) {
+  const currentScrollY = window.pageYOffset;
+  const currentScrollX = window.pageXOffset;
+  
+  // Execute the callback
+  callback();
+  
+  // Use requestAnimationFrame to ensure DOM changes are complete
+  requestAnimationFrame(() => {
+    // Check if scroll position changed unexpectedly
+    const newScrollY = window.pageYOffset;
+    const newScrollX = window.pageXOffset;
+    
+    if (Math.abs(newScrollY - currentScrollY) > 5 || Math.abs(newScrollX - currentScrollX) > 5) {
+      // Restore original position
+      window.scrollTo(currentScrollX, currentScrollY);
+      console.log('📍 Scroll position restored after theme change');
+    }
+  });
+}
 
 // ============================================
 // MOBILE SCROLL FIX FUNCTIONS
