@@ -3,60 +3,72 @@ let mouseX = 0;
 let mouseY = 0;
 
 function toggleTheme() {
-  // Use the scroll preservation function to wrap all theme changes
-  preserveScrollPosition(() => {
-    const body = document.body;
-    const sliderButton = document.querySelector(".slider-button");
-    const careerContent = document.getElementById("career-content");
-    const personalContent = document.getElementById("personal-content");
-    const aboutContent = document.getElementById("about-content");
-
-    isLightTheme = !isLightTheme;
-
-    if (isLightTheme) {
-      // Switch to light theme (Personal)
-      body.classList.remove("dark-theme");
-      body.classList.add("light-theme");
-      sliderButton.innerHTML = "🌸";
-
-      // Switch content
-      careerContent.style.display = "none";
-      personalContent.style.display = "block";
-      
-      // Update about text for personal theme
-      aboutContent.innerHTML = `
-                    Outside of my career, I have a bunch of hobbies I enjoy spending my time on, like photography, sports (Hockey, football, badminton, etc), travelling, and so many other spontaneous activities. I love exploring new places, capturing moments through my camera lens, and enjoying the thrill of outdoor adventures. Here are some snapshots of my personal life that reflect my passions and interests, and make sure to check out my <a href="https://www.instagram.com/raymliu_photography/profilecard/?igsh=MW00MWc4djhjaHFxcA==" class="instagram-link">photography page</a>!
-                `;
-
-      // Force update background elements visibility
-      updateBackgroundElements('light');
-    } else {
-      // Switch to dark theme (Career)
-      body.classList.remove("light-theme");
-      body.classList.add("dark-theme");
-      sliderButton.innerHTML = "🍂";
-
-      // Switch content
-      careerContent.style.display = "block";
-      personalContent.style.display = "none";
-
-      // Update about text for career theme
-      aboutContent.innerHTML = `
-                    As a third-year Computer Science student at Carleton University with a minor in Statistics, 
-                    I am passionate about developing impactful software on both the frontend and backend. 
-                    I have a love for designing interactive and unique user interfaces, and I am always eager to 
-                    learn new technologies and take on challenging projects.
-                `;
-
-      // Force update background elements visibility
-      updateBackgroundElements('dark');
-    }
-    
-    // Update theme color for mobile browsers
-    updateThemeColorMeta();
-  });
+  // Store current scroll position and lock everything
+  const currentScrollY = window.pageYOffset;
+  const isMobile = window.innerWidth <= 768;
   
-  console.log('🎨 Theme toggled with scroll preservation');
+  // Add theme-changing class for mobile to prevent scroll jumping
+  if (isMobile) {
+    document.body.classList.add('theme-changing');
+    document.body.style.top = `-${currentScrollY}px`;
+  }
+  
+  const body = document.body;
+  const sliderButton = document.querySelector(".slider-button");
+  const careerContent = document.getElementById("career-content");
+  const personalContent = document.getElementById("personal-content");
+  const aboutContent = document.getElementById("about-content");
+
+  isLightTheme = !isLightTheme;
+
+  if (isLightTheme) {
+    // Switch to light theme (Personal) - instant changes
+    body.classList.remove("dark-theme");
+    body.classList.add("light-theme");
+    sliderButton.innerHTML = "🌸";
+    careerContent.style.display = "none";
+    personalContent.style.display = "block";
+    
+    // Update about text
+    aboutContent.innerHTML = `
+                  Outside of my career, I have a bunch of hobbies I enjoy spending my time on, like photography, sports (Hockey, football, badminton, etc), travelling, and so many other spontaneous activities. I love exploring new places, capturing moments through my camera lens, and enjoying the thrill of outdoor adventures. Here are some snapshots of my personal life that reflect my passions and interests, and make sure to check out my <a href="https://www.instagram.com/raymliu_photography/profilecard/?igsh=MW00MWc4djhjaHFxcA==" class="instagram-link">photography page</a>!
+              `;
+
+    updateBackgroundElements('light');
+  } else {
+    // Switch to dark theme (Career) - instant changes
+    body.classList.remove("light-theme");
+    body.classList.add("dark-theme");
+    sliderButton.innerHTML = "🍂";
+    careerContent.style.display = "block";
+    personalContent.style.display = "none";
+
+    // Update about text
+    aboutContent.innerHTML = `
+                  As a third-year Computer Science student at Carleton University with a minor in Statistics, 
+                  I am passionate about developing impactful software on both the frontend and backend. 
+                  I have a love for designing interactive and unique user interfaces, and I am always eager to 
+                  learn new technologies and take on challenging projects.
+              `;
+
+    updateBackgroundElements('dark');
+  }
+  
+  updateThemeColorMeta();
+  
+  // Release the lock and restore scroll position
+  if (isMobile) {
+    setTimeout(() => {
+      document.body.classList.remove('theme-changing');
+      document.body.style.top = '';
+      window.scrollTo(0, currentScrollY);
+    }, 100);
+  } else {
+    // Desktop - just ensure scroll position
+    setTimeout(() => window.scrollTo(0, currentScrollY), 10);
+  }
+  
+  console.log('⚡ Ultra-fast theme toggle completed - scroll preserved at:', currentScrollY);
 }
 
 // Function to update theme color meta tag for mobile
@@ -69,51 +81,24 @@ function updateThemeColorMeta() {
   }
 }
 
-// Function to update background elements visibility with mobile optimization
+// Function to update background elements visibility with mobile optimization - ULTRA FAST
 function updateBackgroundElements(theme) {
   const leaves = document.querySelectorAll('.leaf');
   const petals = document.querySelectorAll('.petal');
   const isMobile = window.innerWidth <= 768;
 
   // Reduce background element count on mobile for better performance
-  const maxElements = isMobile ? 8 : 12;
+  const maxElements = isMobile ? 6 : 10; // Further reduced for faster switching
 
+  // Use CSS classes for instant switching instead of individual style changes
   if (theme === 'light') {
-    // Show petals, hide leaves
-    petals.forEach((petal, index) => {
-      if (index < maxElements) {
-        petal.style.opacity = isMobile ? '0.5' : '0.7'; // Reduced opacity on mobile
-        petal.style.display = 'block';
-        // Reduce animation complexity on mobile
-        if (isMobile) {
-          petal.style.animationDuration = '20s'; // Slower animation
-        }
-      } else {
-        petal.style.display = 'none';
-      }
-    });
-    leaves.forEach(leaf => {
-      leaf.style.opacity = '0';
-      leaf.style.display = 'none';
-    });
+    // Show petals, hide leaves - use classes for instant switching
+    document.body.classList.add('show-petals');
+    document.body.classList.remove('show-leaves');
   } else {
-    // Show leaves, hide petals
-    leaves.forEach((leaf, index) => {
-      if (index < maxElements) {
-        leaf.style.opacity = isMobile ? '0.4' : '0.6'; // Reduced opacity on mobile
-        leaf.style.display = 'block';
-        // Reduce animation complexity on mobile
-        if (isMobile) {
-          leaf.style.animationDuration = '18s'; // Slower animation
-        }
-      } else {
-        leaf.style.display = 'none';
-      }
-    });
-    petals.forEach(petal => {
-      petal.style.opacity = '0';
-      petal.style.display = 'none';
-    });
+    // Show leaves, hide petals - use classes for instant switching  
+    document.body.classList.add('show-leaves');
+    document.body.classList.remove('show-petals');
   }
 }// Simple Polaroid Interactions - Enhanced Mobile Optimized
 function initializePolaroidEffects() {
@@ -842,28 +827,13 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // ============================================
-// SCROLL POSITION PRESERVATION
+// SCROLL POSITION PRESERVATION - DEPRECATED
 // ============================================
 
+// NOTE: This function is now deprecated in favor of direct scroll locking in toggleTheme()
 function preserveScrollPosition(callback) {
-  const currentScrollY = window.pageYOffset;
-  const currentScrollX = window.pageXOffset;
-  
-  // Execute the callback
+  // Direct callback execution - no scroll manipulation needed
   callback();
-  
-  // Use requestAnimationFrame to ensure DOM changes are complete
-  requestAnimationFrame(() => {
-    // Check if scroll position changed unexpectedly
-    const newScrollY = window.pageYOffset;
-    const newScrollX = window.pageXOffset;
-    
-    if (Math.abs(newScrollY - currentScrollY) > 5 || Math.abs(newScrollX - currentScrollX) > 5) {
-      // Restore original position
-      window.scrollTo(currentScrollX, currentScrollY);
-      console.log('📍 Scroll position restored after theme change');
-    }
-  });
 }
 
 // ============================================
@@ -871,9 +841,31 @@ function preserveScrollPosition(callback) {
 // ============================================
 
 function fixMobileScrollIssues() {
+  // Store the initial scroll position
+  let scrollLocked = false;
+  let lastScrollY = 0;
+  
   // Ensure body and html allow scrolling
   document.documentElement.style.touchAction = 'pan-y';
   document.body.style.touchAction = 'pan-y';
+  
+  // Prevent scroll jumping during theme changes
+  const originalScrollTo = window.scrollTo;
+  window.scrollTo = function(x, y) {
+    if (!scrollLocked) {
+      originalScrollTo.call(window, x, y);
+    }
+  };
+  
+  // Lock scroll during theme transitions
+  window.lockScroll = function() {
+    scrollLocked = true;
+    lastScrollY = window.pageYOffset;
+    setTimeout(() => {
+      scrollLocked = false;
+      window.scrollTo(0, lastScrollY);
+    }, 50);
+  };
   
   // Fix any elements that might be blocking scroll
   const allElements = document.querySelectorAll('*');
@@ -890,7 +882,7 @@ function fixMobileScrollIssues() {
     }
   });
   
-  // Ensure scroll events work properly
+  // Ensure scroll events work properly with debouncing
   let isScrolling = false;
   let scrollTimeout;
   
@@ -904,9 +896,9 @@ function fixMobileScrollIssues() {
     scrollTimeout = setTimeout(function() {
       isScrolling = false;
       document.body.classList.remove('is-scrolling');
-    }, 150);
+    }, 100); // Reduced timeout for faster response
   }, { passive: true });
   
   // Debug scroll issues
-  console.log('📱 Mobile scroll fixes applied');
+  console.log('📱 Enhanced mobile scroll fixes applied');
 }

@@ -265,25 +265,46 @@ a:hover {
 }
 
 /* Show leaves in dark theme, hide petals */
-.dark-theme .leaf {
+.dark-theme .leaf,
+.show-leaves .leaf {
   opacity: 0.6;
   display: block;
 }
 
-.dark-theme .petal {
+.dark-theme .petal,
+.show-leaves .petal {
   opacity: 0;
   display: none;
 }
 
 /* Show petals in light theme, hide leaves */
-.light-theme .petal {
+.light-theme .petal,
+.show-petals .petal {
   opacity: 0.7;
   display: block;
 }
 
-.light-theme .leaf {
+.light-theme .leaf,
+.show-petals .leaf {
   opacity: 0;
   display: none;
+}
+
+/* Mobile optimizations for background elements */
+@media (max-width: 768px) {
+  .show-petals .petal {
+    opacity: 0.4;
+  }
+  
+  .show-leaves .leaf {
+    opacity: 0.3;
+  }
+  
+  /* Hide extra elements on mobile for performance */
+  .leaf:nth-child(n+7),
+  .petal:nth-child(n+7) {
+    display: none !important;
+  }
 }
 
 @keyframes float {
@@ -1346,8 +1367,24 @@ body.loaded {
 
 /* Smooth transitions for theme changes */
 * {
-  transition: background-color 0.8s ease, color 0.8s ease,
-    border-color 0.8s ease;
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+/* Faster transitions on mobile for better UX */
+@media (max-width: 768px) {
+  * {
+    transition: background-color 0.15s ease, color 0.15s ease,
+      border-color 0.15s ease;
+  }
+  
+  .slider-button {
+    transition: all 0.15s ease;
+  }
+  
+  .theme-toggle {
+    transition: all 0.15s ease;
+  }
 }
 
 /* Personal content section styling */
@@ -1380,7 +1417,8 @@ body.loaded {
 }
 
 .interactive-image-container {
-  /* Remove animation that conflicts with JS transforms */
+  /* Animation handled by JavaScript for optimal mobile performance */
+  position: relative;
 }
 
 /* Enhanced text animations */
@@ -2357,5 +2395,76 @@ body:has(.main-nav)::before {
   /* Fix for momentum scrolling on iOS */
   * {
     -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ============================================
+   AGGRESSIVE MOBILE SCROLL JUMP PREVENTION
+   ============================================ */
+
+/* Prevent any layout shifts during theme changes */
+@media (max-width: 768px) {
+  /* Lock scroll position during transitions */
+  body.theme-changing {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  /* Prevent reflow during content switching */
+  #career-content, #personal-content {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 1;
+    transition: opacity 0.1s ease !important;
+  }
+  
+  #career-content[style*="display: none"] {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+  }
+  
+  #personal-content[style*="display: none"] {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Force GPU acceleration for smooth theme switching */
+  .theme-toggle, .slider-button {
+    transform: translateZ(0) !important;
+    will-change: transform !important;
+  }
+  
+  /* Prevent background element reflows */
+  .bg-elements {
+    position: fixed !important;
+    will-change: auto !important;
+  }
+  
+  /* Disable parallax completely on mobile during theme changes */
+  body.theme-changing .bg-elements,
+  body.theme-changing .header {
+    transform: none !important;
+  }
+  
+  /* Ensure critical sections maintain their positions */
+  .about-section, .contact-section {
+    transform: translateZ(0) !important;
+  }
+}
+
+/* Ultra-fast theme transitions on mobile */
+@media (max-width: 768px) and (pointer: coarse) {
+  * {
+    transition-duration: 0.1s !important;
+  }
+  
+  .slider-button {
+    transition: transform 0.1s ease !important;
   }
 }
