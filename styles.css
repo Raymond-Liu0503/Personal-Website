@@ -36,6 +36,13 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+html {
+  /* Prevent scroll jumping on mobile browsers */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
 body {
   font-family: "DM Sans", sans-serif;
   overflow-x: hidden;
@@ -43,6 +50,9 @@ body {
   min-height: 100vh;
   font-weight: 400;
   letter-spacing: 0.01em;
+  /* Prevent layout shifts during viewport changes */
+  position: relative;
+  overflow-anchor: none;
 }
 
 /* Link Styling - Remove default blue color */

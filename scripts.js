@@ -579,23 +579,16 @@ function optimizeScrollPerformance() {
 
 function handleOrientationChange() {
   const handleOrientation = () => {
-    // Update viewport height for mobile browsers
+    // Only update CSS custom properties, don't manipulate body height
     const vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
     
     // Update theme color on orientation change
     setTimeout(updateThemeColorMeta, 100);
-    
-    // Trigger a reflow to fix layout issues
-    document.body.style.height = window.innerHeight + 'px';
-    setTimeout(() => {
-      document.body.style.height = '';
-    }, 100);
   };
 
-  // Handle both orientationchange and resize
+  // Only listen to orientationchange, not resize (which triggers too often)
   window.addEventListener('orientationchange', handleOrientation);
-  window.addEventListener('resize', handleOrientation);
   
   // Initial call
   handleOrientation();
@@ -606,14 +599,9 @@ function handleIOSOptimizations() {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   
   if (isIOS) {
-    // Fix iOS viewport units
-    const setViewportHeight = () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    };
-    
-    window.addEventListener('resize', setViewportHeight);
-    setViewportHeight();
+    // Only set initial viewport height, don't listen to resize
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
     
     // FIXED: More selective iOS bounce scroll prevention
     // Only prevent bounce on the body itself, not on scrollable content
