@@ -3,8 +3,8 @@ let mouseX = 0;
 let mouseY = 0;
 
 function toggleTheme() {
-  // ENHANCED: Prevent scroll jumping with scroll restoration API + CSS containment
-  const originalPosition = window.pageYOffset;
+  // Simple, fast theme switching without complex locking
+  const currentScrollY = window.pageYOffset;
   
   const body = document.body;
   const sliderButton = document.querySelector(".slider-button");
@@ -12,30 +12,15 @@ function toggleTheme() {
   const personalContent = document.getElementById("personal-content");
   const aboutContent = document.getElementById("about-content");
 
-  // STEP 1: Use CSS containment to prevent layout shifts
-  body.classList.add('theme-changing');
-  
-  // STEP 2: Store scroll position in history for restoration
-  if ('scrollRestoration' in history) {
-    history.scrollRestoration = 'manual';
-  }
-
   isLightTheme = !isLightTheme;
 
-  // STEP 3: Make all DOM changes at once
   if (isLightTheme) {
     // Switch to light theme (Personal)
     body.classList.remove("dark-theme");
     body.classList.add("light-theme");
     sliderButton.innerHTML = "🌸";
-    
-    // OPTIMIZED: Use visibility instead of display to prevent layout shifts
-    careerContent.style.visibility = "hidden";
-    careerContent.style.position = "absolute";
-    careerContent.style.top = "-9999px";
-    personalContent.style.visibility = "visible";
-    personalContent.style.position = "static";
-    personalContent.style.top = "auto";
+    careerContent.style.display = "none";
+    personalContent.style.display = "block";
     
     // Update about text
     aboutContent.innerHTML = `
@@ -46,14 +31,8 @@ function toggleTheme() {
     body.classList.remove("light-theme");
     body.classList.add("dark-theme");
     sliderButton.innerHTML = "🍂";
-    
-    // OPTIMIZED: Use visibility instead of display to prevent layout shifts
-    personalContent.style.visibility = "hidden";
-    personalContent.style.position = "absolute";
-    personalContent.style.top = "-9999px";
-    careerContent.style.visibility = "visible";
-    careerContent.style.position = "static";
-    careerContent.style.top = "auto";
+    careerContent.style.display = "block";
+    personalContent.style.display = "none";
 
     // Update about text
     aboutContent.innerHTML = `
@@ -67,34 +46,14 @@ function toggleTheme() {
   updateBackgroundElements(isLightTheme ? 'light' : 'dark');
   updateThemeColorMeta();
   
-  // STEP 4: Force layout recalculation and restore scroll position
-  requestAnimationFrame(() => {
-    // Force reflow to ensure layout is calculated
-    document.body.offsetHeight;
-    
-    // Remove theme changing class
-    body.classList.remove('theme-changing');
-    
-    // Restore scroll position with multiple methods for reliability
-    window.scrollTo({
-      top: originalPosition,
-      behavior: 'instant'
-    });
-    
-    // Fallback scroll restoration
-    if (Math.abs(window.pageYOffset - originalPosition) > 10) {
-      window.scrollTo(0, originalPosition);
+  // Simple scroll preservation - just ensure position stays the same
+  setTimeout(() => {
+    if (Math.abs(window.pageYOffset - currentScrollY) > 10) {
+      window.scrollTo(0, currentScrollY);
     }
-    
-    // Final safety check after next frame
-    requestAnimationFrame(() => {
-      if (Math.abs(window.pageYOffset - originalPosition) > 10) {
-        window.scrollTo(0, originalPosition);
-      }
-    });
-  });
+  }, 50);
   
-  console.log('🎨 Enhanced scroll-restoration theme toggle completed');
+  console.log('🎨 Fast theme toggle completed');
 }
 
 // Function to update theme color meta tag for mobile
@@ -113,9 +72,6 @@ function updateBackgroundElements(theme) {
   const petals = document.querySelectorAll('.petal');
   const isMobile = window.innerWidth <= 768;
 
-  console.log(`🌸 Updating background elements to theme: ${theme}`);
-  console.log(`🌸 Found ${leaves.length} leaves and ${petals.length} petals`);
-
   // Reduce background element count on mobile for better performance
   const maxElements = isMobile ? 6 : 10; // Further reduced for faster switching
 
@@ -124,16 +80,11 @@ function updateBackgroundElements(theme) {
     // Show petals, hide leaves - use classes for instant switching
     document.body.classList.add('show-petals');
     document.body.classList.remove('show-leaves');
-    console.log('🌸 Added show-petals class, removed show-leaves class');
   } else {
     // Show leaves, hide petals - use classes for instant switching  
     document.body.classList.add('show-leaves');
     document.body.classList.remove('show-petals');
-    console.log('🍂 Added show-leaves class, removed show-petals class');
   }
-  
-  // Debug: Log current classes
-  console.log('🌸 Body classes:', document.body.className);
 }// Simple Polaroid Interactions - Enhanced Mobile Optimized
 function initializePolaroidEffects() {
   const galleryItems = document.querySelectorAll(".gallery-item");
@@ -935,33 +886,4 @@ function fixMobileScrollIssues() {
   
   // Debug scroll issues
   console.log('📱 Enhanced mobile scroll fixes applied');
-}
-
-// Enhanced debug logging for scroll position and background elements
-function debugScrollAndBackground() {
-  const scrollPos = window.pageYOffset;
-  const bodyClasses = document.body.className;
-  const petalsVisible = document.querySelectorAll('.petal[style*="block"], .petal:not([style*="none"])').length;
-  const leavesVisible = document.querySelectorAll('.leaf[style*="block"], .leaf:not([style*="none"])').length;
-  
-  console.log(`📊 Debug Info:
-    🔽 Scroll Position: ${scrollPos}px
-    🎨 Body Classes: "${bodyClasses}"
-    🌸 Visible Petals: ${petalsVisible}
-    🍂 Visible Leaves: ${leavesVisible}
-    📱 Mobile: ${window.innerWidth <= 768}
-    🌍 Theme: ${document.body.classList.contains('light-theme') ? 'Light' : 'Dark'}`);
-}
-
-// Call debug function after theme changes
-function enhancedToggleTheme() {
-  toggleTheme();
-  setTimeout(() => debugScrollAndBackground(), 100);
-}
-
-// Override the theme toggle to include debug logging
-// (This can be removed in production)
-if (typeof window !== 'undefined') {
-  window.debugScrollAndBackground = debugScrollAndBackground;
-  window.enhancedToggleTheme = enhancedToggleTheme;
 }

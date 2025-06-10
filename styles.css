@@ -290,48 +290,14 @@ a:hover {
   display: none;
 }
 
-/* PRIORITY: Utility classes override theme classes */
-body.show-petals .petal {
-  opacity: 0.7 !important;
-  display: block !important;
-}
-
-body.show-petals .leaf {
-  opacity: 0 !important;
-  display: none !important;
-}
-
-body.show-leaves .leaf {
-  opacity: 0.6 !important;
-  display: block !important;
-}
-
-body.show-leaves .petal {
-  opacity: 0 !important;
-  display: none !important;
-}
-
 /* Mobile optimizations for background elements */
 @media (max-width: 768px) {
-  /* Ensure priority classes work on mobile */
-  body.show-petals .petal {
-    opacity: 0.4 !important;
-    display: block !important;
+  .show-petals .petal {
+    opacity: 0.4;
   }
   
-  body.show-leaves .leaf {
-    opacity: 0.3 !important;
-    display: block !important;
-  }
-  
-  body.show-petals .leaf {
-    opacity: 0 !important;
-    display: none !important;
-  }
-  
-  body.show-leaves .petal {
-    opacity: 0 !important;
-    display: none !important;
+  .show-leaves .leaf {
+    opacity: 0.3;
   }
   
   /* Hide extra elements on mobile for performance */
@@ -1421,18 +1387,9 @@ body.loaded {
   }
 }
 
-/* Personal content section styling - OPTIMIZED for anti-scroll-jump */
+/* Personal content section styling */
 #personal-content {
-  /* Use visibility instead of display to prevent layout shifts */
-  visibility: hidden;
-  position: absolute;
-  top: -9999px;
-}
-
-/* Career content is visible by default */
-#career-content {
-  visibility: visible;
-  position: static;
+  display: none;
 }
 
 .personal-intro-text {
@@ -2455,7 +2412,6 @@ body:has(.main-nav)::before {
   }
   
   .slider-button {
-   
     transition: transform 0.15s ease !important;
   }
   
@@ -2466,65 +2422,5 @@ body:has(.main-nav)::before {
   
   body {
     overscroll-behavior: none;
-  }
-}
-
-/* ============================================
-   ANTI-SCROLL-JUMP PROTECTION
-   ============================================ */
-
-/* Prevent layout shifts during theme changes */
-#career-content, #personal-content {
-  /* Ensure content sections don't cause layout shifts when hidden/shown */
-  will-change: auto;
-  contain: layout style;
-  /* OPTIMIZED: Use consistent positioning approach */
-  transition: none !important; /* Disable transitions during theme change */
-}
-
-/* Prevent content jumping by maintaining consistent space */
-#career-content, #personal-content {
-  min-height: 0; /* Reset any conflicting min-heights */
-  width: 100%; /* Ensure full width when visible */
-}
-
-/* Optimize about content for fast switching */
-#about-content {
-  contain: layout style;
-  will-change: auto;
-}
-
-/* Mobile-specific anti-jump optimizations */
-@media (max-width: 768px) {
-  /* Force hardware acceleration for smoother transitions */
-  .theme-toggle, #career-content, #personal-content, #about-content {
-    transform: translateZ(0);
-  }
-  
-  /* Prevent any potential height changes from causing scroll jumps */
-  body {
-    scroll-behavior: auto !important;
-  }
-    /* Enhanced scroll lock during theme transitions - Mobile Friendly */
-  body.theme-changing {
-    /* Use scroll-behavior instead of position fixed for better mobile support */
-    scroll-behavior: auto !important;
-    overflow: hidden;
-    /* CSS containment to prevent layout shifts */
-    contain: layout style;
-  }
-  
-  /* Prevent content shifting during theme changes */
-  body.theme-changing #career-content,
-  body.theme-changing #personal-content {
-    contain: layout style paint;
-    will-change: visibility, position;
-    transition: none !important;
-  }
-  
-  /* Disable all animations during theme change for instant switching */
-  body.theme-changing * {
-    transition: none !important;
-    animation-duration: 0s !important;
   }
 }
