@@ -922,6 +922,38 @@ function fixMobileScrollIssues() {
       window.scrollTo(0, lastScrollY);
     }, 50);
   };
+
+  (function fixMobileJump() {
+  let lastScrollTop = 0;
+  let ticking = false;
+
+  // Use visualViewport if available
+  if (window.visualViewport) {
+    let lastHeight = window.visualViewport.height;
+
+    window.visualViewport.addEventListener("resize", () => {
+      const newHeight = window.visualViewport.height;
+      const heightDelta = newHeight - lastHeight;
+      lastHeight = newHeight;
+
+      // Only trigger scroll adjustment if it's a small change and user hasn't scrolled significantly
+      if (Math.abs(heightDelta) > 10 && Math.abs(window.scrollY - lastScrollTop) < 50) {
+        window.scrollTo({ top: lastScrollTop, behavior: "auto" });
+      }
+    });
+  }
+
+  // Track last known scroll position
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        lastScrollTop = window.scrollY;
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+})();
   
   // Fix any elements that might be blocking scroll
   const allElements = document.querySelectorAll('*');
