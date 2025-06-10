@@ -874,9 +874,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Add loading animation completion
   document.body.classList.add("loaded");
-
   // Initialize mobile optimizations
   initMobileOptimizations();
+
+  // Add failsafe: always unlock scroll on resize/orientationchange
+  window.addEventListener('resize', unlockBodyScroll);
+  window.addEventListener('orientationchange', unlockBodyScroll);
 });
 
 function unlockBodyScroll() {
@@ -902,79 +905,9 @@ function preserveScrollPosition(callback) {
 // ============================================
 
 function fixMobileScrollIssues() {
-  // Store the initial scroll position
-  let scrollLocked = false;
-  let lastScrollY = 0;
-
-  // Ensure body and html allow scrolling
+  // Simplified mobile scroll fix - only handle essential touch actions
   document.documentElement.style.touchAction = 'pan-y';
   document.body.style.touchAction = 'pan-y';
-
-  // Prevent scroll jumping during theme changes
-  const originalScrollTo = window.scrollTo;
-  window.scrollTo = function(x, y) {
-    if (!scrollLocked) {
-      originalScrollTo.call(window, x, y);
-    }
-  };
-
-  // Lock scroll during theme transitions
-  window.lockScroll = function() {
-    scrollLocked = true;
-    lastScrollY = window.pageYOffset;
-    setTimeout(() => {
-      scrollLocked = false;
-      window.scrollTo(0, lastScrollY);
-    }, 50);
-  };
-
-  (function fixMobileJump() {
-    let lastScrollTop = 0;
-    let ticking = false;
-
-    // Use visualViewport if available
-    if (window.visualViewport) {
-      let lastHeight = window.visualViewport.height;
-
-      window.visualViewport.addEventListener("resize", () => {
-        const newHeight = window.visualViewport.height;
-        const heightDelta = newHeight - lastHeight;
-        lastHeight = newHeight;
-
-        // Only restore scroll if:
-        // 1. Height change is significant (likely keyboard)
-        // 2. The focused element is an input, textarea, or contenteditable
-        // 3. The new height is much less than window.innerHeight (keyboard open)
-        const active = document.activeElement;
-        const isInputFocused = active && (
-          active.tagName === 'INPUT' ||
-          active.tagName === 'TEXTAREA' ||
-          active.isContentEditable
-        );
-        const keyboardLikelyOpen = (window.innerHeight - newHeight) > 120;
-        if (
-          Math.abs(heightDelta) > 100 &&
-          isInputFocused &&
-          keyboardLikelyOpen &&
-          Math.abs(window.scrollY - lastScrollTop) < 50
-        ) {
-          window.scrollTo({ top: lastScrollTop, behavior: "auto" });
-        }
-        // For nav bar or other small changes, do nothing
-      });
-    }
-
-    // Track last known scroll position
-    window.addEventListener("scroll", () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          lastScrollTop = window.scrollY;
-          ticking = false;
-        });
-        ticking = true;
-      }
-    });
-  })();
 
   // Fix any elements that might be blocking scroll
   const allElements = document.querySelectorAll('*');
@@ -988,22 +921,5 @@ function fixMobileScrollIssues() {
     }
   });
 
-  // Ensure scroll events work properly with debouncing
-  let isScrolling = false;
-  let scrollTimeout;
-
-  window.addEventListener('scroll', function() {
-    if (!isScrolling) {
-      isScrolling = true;
-      document.body.classList.add('is-scrolling');
-    }
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(function() {
-      isScrolling = false;
-      document.body.classList.remove('is-scrolling');
-    }, 100); // Reduced timeout for faster response
-  }, { passive: true });
-
-  // Debug scroll issues
-  console.log('📱 Enhanced mobile scroll fixes applied');
+  console.log('📱 Simplified mobile scroll fixes applied');
 }
