@@ -404,6 +404,14 @@ a:hover {
   overflow: hidden;
 }
 
+/* Mobile viewport fix for header */
+@media (max-width: 768px) {
+  .header {
+    min-height: 100vh;
+    height: auto;
+  }
+}
+
 /* Enhanced floating animation for logo */
 .logo {
   animation: logoFloat 6s ease-in-out infinite;
@@ -1754,10 +1762,7 @@ p, h1, h2, h3, h4, h5, h6, .gallery-caption, .overlay-text {
 
 /* Allow scrolling on all elements by default */
 html, body {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  /* REMOVED user-select: none as it can interfere with mobile scrolling */
   /* Ensure smooth scrolling */
   touch-action: pan-y;
 }
