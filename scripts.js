@@ -1,33 +1,3 @@
-// Emergency mobile scroll fix - run immediately
-(function emergencyScrollFix() {
-  if (window.innerWidth <= 768 || 'ontouchstart' in window) {
-    console.log('🚨 Emergency mobile scroll fix activated');
-    
-    // Force enable scrolling immediately
-    document.documentElement.style.overflow = 'auto';
-    document.documentElement.style.overflowY = 'auto';
-    document.documentElement.style.overflowX = 'hidden';
-    document.documentElement.style.touchAction = 'pan-y';
-    document.documentElement.style.userSelect = 'auto';
-    document.documentElement.style.webkitUserSelect = 'auto';
-    
-    if (document.body) {
-      document.body.style.overflow = 'auto';
-      document.body.style.overflowY = 'auto';
-      document.body.style.overflowX = 'hidden';
-      document.body.style.touchAction = 'pan-y';
-      document.body.style.userSelect = 'auto';
-      document.body.style.webkitUserSelect = 'auto';
-      document.body.style.position = 'static';
-      document.body.style.top = 'auto';
-      document.body.style.width = 'auto';
-      document.body.style.height = 'auto';
-    }
-    
-    console.log('✅ Emergency scroll fix applied');
-  }
-})();
-
 let isLightTheme = false;
 let mouseX = 0;
 let mouseY = 0;
@@ -43,16 +13,13 @@ function toggleTheme() {
   // Store current scroll position
   const currentScrollY = window.pageYOffset;
   console.log('📍 Current scroll position:', currentScrollY);
-
-  // Simpler scroll preservation approach for mobile
+  // Simpler, less disruptive approach for mobile
   const isMobile = window.innerWidth <= 768;
   
+  // For mobile, use a less invasive scroll preservation method
   if (isMobile) {
-    // Mobile: temporarily prevent scrolling during theme change
-    body.style.position = 'fixed';
-    body.style.top = `-${currentScrollY}px`;
-    body.style.width = '100%';
-    body.style.overflow = 'hidden';
+    // Just store the position, don't lock scrolling
+    console.log('📱 Mobile theme change, preserving scroll at:', currentScrollY);
   }
 
   // Toggle theme
@@ -89,26 +56,15 @@ function toggleTheme() {
   }
   
   updateBackgroundElements(isLightTheme ? 'light' : 'dark');
-  updateThemeColorMeta();
-    // Restore scroll position
+  updateThemeColorMeta();  // Restore scroll position with simpler approach
   if (isMobile) {
-    // Mobile: restore scrolling and position with better error handling
-    requestAnimationFrame(() => {
-      try {
-        unlockBodyScroll();
-        window.scrollTo(0, currentScrollY);
-        console.log('📱 Mobile scroll restored to:', currentScrollY);
-      } catch (error) {
-        console.error('❌ Error restoring mobile scroll:', error);
-        // Failsafe: force unlock scroll
-        unlockBodyScroll();
-      }
-    });
-    
-    // Additional failsafe with timeout
+    // Mobile: gentle scroll restoration without aggressive locking
     setTimeout(() => {
-      unlockBodyScroll();
-    }, 100);
+      if (Math.abs(window.pageYOffset - currentScrollY) > 10) {
+        window.scrollTo(0, currentScrollY);
+        console.log('📱 Mobile scroll gently restored to:', currentScrollY);
+      }
+    }, 50);
   } else {
     // Desktop: simple scroll check
     setTimeout(() => {
@@ -839,14 +795,10 @@ document.addEventListener("DOMContentLoaded", function () {
     themeSlider.addEventListener("click", function() {
       console.log('🖱️ Theme slider clicked!');
       toggleTheme();
-    });  } else {
+    });
+  } else {
     console.error('❌ Theme slider element not found!');
   }
-
-  // Debug mobile scroll (for development)
-  setTimeout(() => {
-    debugMobileScroll();
-  }, 1000);
 
   // Smooth scrolling for internal links
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
@@ -952,33 +904,15 @@ function preserveScrollPosition(callback) {
 // ============================================
 
 function fixMobileScrollIssues() {
-  console.log('🔧 Applying comprehensive mobile scroll fixes...');
-  
-  // Force reset all scroll-blocking properties on html and body
-  const html = document.documentElement;
-  const body = document.body;
+  // Simplified mobile scroll fix - only handle essential touch actions
+  document.documentElement.style.touchAction = 'pan-y';
+  document.body.style.touchAction = 'pan-y';
   
   // Ensure HTML and body allow scrolling
-  html.style.overflow = '';
-  html.style.overflowY = 'auto';
-  html.style.overflowX = 'hidden';
-  html.style.touchAction = 'pan-y';
-  html.style.userSelect = '';
-  html.style.webkitUserSelect = '';
-  
-  body.style.overflow = '';
-  body.style.overflowY = 'auto';
-  body.style.overflowX = 'hidden';
-  body.style.touchAction = 'pan-y';
-  body.style.userSelect = '';
-  body.style.webkitUserSelect = '';
-  body.style.position = '';
-  body.style.top = '';
-  body.style.width = '';
-  body.style.height = '';
-  
-  console.log('📱 HTML overflow:', html.style.overflow, 'Y:', html.style.overflowY);
-  console.log('📱 Body overflow:', body.style.overflow, 'Y:', body.style.overflowY);
+  document.documentElement.style.overflowY = 'auto';
+  document.body.style.overflowY = 'auto';
+  document.documentElement.style.overflowX = 'hidden';
+  document.body.style.overflowX = 'hidden';
 
   // Fix any elements that might be blocking scroll
   const allElements = document.querySelectorAll('*');
@@ -991,11 +925,42 @@ function fixMobileScrollIssues() {
       }
     }
   });
-  console.log('✅ Comprehensive mobile scroll fixes applied');
+
+  console.log('📱 Simplified mobile scroll fixes applied');
 }
 
-// Debug function to check mobile scroll status
-function debugMobileScroll() {
+// Emergency mobile scroll fix - runs immediately
+function emergencyMobileScrollFix() {
+  if (window.innerWidth <= 768) {
+    console.log('🚨 Applying emergency mobile scroll fixes...');
+    
+    const html = document.documentElement;
+    const body = document.body;
+    
+    // Ensure basic scroll properties are correct
+    html.style.overflow = 'visible';
+    html.style.overflowX = 'hidden';
+    html.style.overflowY = 'auto';
+    html.style.touchAction = 'pan-y';
+    html.style.webkitOverflowScrolling = 'touch';
+    
+    body.style.overflow = 'visible';
+    body.style.overflowX = 'hidden';
+    body.style.overflowY = 'auto';
+    body.style.position = 'static';
+    body.style.touchAction = 'pan-y';
+    body.style.webkitOverflowScrolling = 'touch';
+    
+    // Remove any scroll-blocking properties
+    body.style.height = 'auto';
+    body.style.minHeight = '100vh';
+    
+    console.log('✅ Emergency mobile scroll fixes applied');
+  }
+}
+
+// Debug function to check mobile scroll status - can be called from browser console
+window.debugMobileScroll = function() {
   if (window.innerWidth <= 768) {
     console.log('🔍 DEBUG: Mobile scroll status check');
     const html = document.documentElement;
@@ -1010,10 +975,9 @@ function debugMobileScroll() {
     console.log('🌊 Body overflowY:', getComputedStyle(body).overflowY);
     console.log('👆 HTML touchAction:', getComputedStyle(html).touchAction);
     console.log('👆 Body touchAction:', getComputedStyle(body).touchAction);
-    console.log('🚫 HTML userSelect:', getComputedStyle(html).userSelect);
-    console.log('🚫 Body userSelect:', getComputedStyle(body).userSelect);
     console.log('📍 Current scroll position:', window.pageYOffset);
-      // Test if scroll is possible
+    
+    // Test if scroll is possible
     const canScroll = document.documentElement.scrollHeight > window.innerHeight;
     console.log('✅ Can scroll (content > viewport):', canScroll);
     
@@ -1024,39 +988,32 @@ function debugMobileScroll() {
       const newPosition = window.pageYOffset;
       console.log('🧪 Scroll test: tried to scroll to 50, actual position:', newPosition);
       window.scrollTo(0, originalPosition); // Restore position
+      
+      if (newPosition === originalPosition) {
+        console.log('❌ PROBLEM: Scroll appears to be blocked!');
+        console.log('🔧 Try running: emergencyMobileScrollFix()');
+      } else {
+        console.log('✅ Scroll appears to be working');
+      }
     }, 100);
+  } else {
+    console.log('ℹ️ Not on mobile viewport, scroll debugging skipped');
   }
-}
+};
 
-// Global test function for manual testing in browser console
+// Global test function for comprehensive mobile scroll testing
 window.testMobileScroll = function() {
   console.log('🧪 Running comprehensive mobile scroll test...');
   
   // Run debug function
-  debugMobileScroll();
+  window.debugMobileScroll();
   
-  // Apply fixes
-  fixMobileScrollIssues();
+  // Apply emergency fixes
+  emergencyMobileScrollFix();
   
-  // Test scrolling programmatically
-  const originalPosition = window.pageYOffset;
-  console.log('📍 Starting position:', originalPosition);
-  
-  // Try scrolling down
-  window.scrollTo(0, 200);
+  // Re-run debug to see if fixed
   setTimeout(() => {
-    const position1 = window.pageYOffset;
-    console.log('📍 After scrolling to 200:', position1);
-    
-    // Try scrolling to bottom
-    window.scrollTo(0, document.documentElement.scrollHeight);
-    setTimeout(() => {
-      const position2 = window.pageYOffset;
-      console.log('📍 After scrolling to bottom:', position2);
-      
-      // Restore original position
-      window.scrollTo(0, originalPosition);
-      console.log('✅ Mobile scroll test complete. Check results above.');
-    }, 500);
-  }, 500);
+    console.log('🔄 Re-testing after emergency fixes...');
+    window.debugMobileScroll();
+  }, 200);
 };

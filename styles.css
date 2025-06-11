@@ -56,6 +56,11 @@ html {
   overflow-x: hidden;
   overflow-y: auto;
   height: 100%;
+  /* Ensure touch scrolling works on mobile */
+  touch-action: pan-y;
+  -webkit-touch-callout: default;
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 /* Custom Scrollbar Styling */
@@ -121,6 +126,11 @@ body {
   position: relative;
   overflow-anchor: none;
   height: 100%;
+  /* Mobile scroll fixes */
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 /* Link Styling - Remove default blue color */
@@ -402,14 +412,6 @@ a:hover {
   text-align: center;
   position: relative;
   overflow: hidden;
-}
-
-/* Mobile viewport fix for header */
-@media (max-width: 768px) {
-  .header {
-    min-height: 100vh;
-    height: auto;
-  }
 }
 
 /* Enhanced floating animation for logo */
@@ -1762,7 +1764,10 @@ p, h1, h2, h3, h4, h5, h6, .gallery-caption, .overlay-text {
 
 /* Allow scrolling on all elements by default */
 html, body {
-  /* REMOVED user-select: none as it can interfere with mobile scrolling */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   /* Ensure smooth scrolling */
   touch-action: pan-y;
 }
