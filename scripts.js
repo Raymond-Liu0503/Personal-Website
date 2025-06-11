@@ -60,15 +60,25 @@ function toggleTheme() {
   
   updateBackgroundElements(isLightTheme ? 'light' : 'dark');
   updateThemeColorMeta();
-  
-  // Restore scroll position
+    // Restore scroll position
   if (isMobile) {
-    // Mobile: restore scrolling and position
+    // Mobile: restore scrolling and position with better error handling
     requestAnimationFrame(() => {
-      unlockBodyScroll();
-      window.scrollTo(0, currentScrollY);
-      console.log('📱 Mobile scroll restored to:', currentScrollY);
+      try {
+        unlockBodyScroll();
+        window.scrollTo(0, currentScrollY);
+        console.log('📱 Mobile scroll restored to:', currentScrollY);
+      } catch (error) {
+        console.error('❌ Error restoring mobile scroll:', error);
+        // Failsafe: force unlock scroll
+        unlockBodyScroll();
+      }
     });
+    
+    // Additional failsafe with timeout
+    setTimeout(() => {
+      unlockBodyScroll();
+    }, 100);
   } else {
     // Desktop: simple scroll check
     setTimeout(() => {
@@ -438,6 +448,9 @@ function initializeInteractiveImage() {
 function initMobileOptimizations() {
   // Update theme color meta tag
   updateThemeColorMeta();
+  
+  // PRIORITY: Ensure scroll is unlocked on page load
+  unlockBodyScroll();
   
   // PRIORITY: Fix mobile scroll issues first
   fixMobileScrollIssues();
@@ -872,10 +885,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function unlockBodyScroll() {
   const body = document.body;
+  const html = document.documentElement;
+  
+  // Clear all potential scroll-blocking styles
   body.style.position = '';
   body.style.top = '';
   body.style.width = '';
   body.style.overflow = '';
+  
+  // Ensure HTML allows scrolling (failsafe)
+  html.style.overflow = '';
+  
+  // Force reset touch actions to allow scrolling
+  body.style.touchAction = 'pan-y';
+  html.style.touchAction = 'pan-y';
+  
+  console.log('🔓 Body scroll unlocked with failsafes');
 }
 
 // ============================================
@@ -896,6 +921,12 @@ function fixMobileScrollIssues() {
   // Simplified mobile scroll fix - only handle essential touch actions
   document.documentElement.style.touchAction = 'pan-y';
   document.body.style.touchAction = 'pan-y';
+  
+  // Ensure HTML and body allow scrolling
+  document.documentElement.style.overflowY = 'auto';
+  document.body.style.overflowY = 'auto';
+  document.documentElement.style.overflowX = 'hidden';
+  document.body.style.overflowX = 'hidden';
 
   // Fix any elements that might be blocking scroll
   const allElements = document.querySelectorAll('*');

@@ -53,7 +53,8 @@ html {
   /* Prevent scroll jumping on mobile browsers */
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   height: 100%;
 }
 
