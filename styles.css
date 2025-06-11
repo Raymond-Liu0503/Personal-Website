@@ -24,11 +24,23 @@
   --light-accent: #ec4899;
   --light-secondary: #f9a8d4;
   --light-cherry: #fbbf24;
-
   /* Mouse tracking variables */
   --mouse-x: 0px;
   --mouse-y: 0px;
   --scroll-progress: 0;
+    /* Liquid Glass Variables */
+  --light-x: 0px;
+  --light-y: 0px;
+  --light-intensity: 0;
+  --hover-state: 0;
+  --ripple-x: 50%;
+  --ripple-y: 50%;
+  
+  /* Dynamic theme glass variables */
+  --glass-tint: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-highlight: rgba(255, 255, 255, 0.4);
+  --glass-shadow: rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -41,18 +53,73 @@ html {
   /* Prevent scroll jumping on mobile browsers */
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Custom Scrollbar Styling */
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--dark-accent), var(--dark-secondary));
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ff7f50, var(--dark-accent));
+  transform: scale(1.1);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--dark-accent);
+}
+
+/* Light theme scrollbar */
+.light-theme ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--light-accent), var(--light-secondary));
+}
+
+.light-theme ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ff69b4, var(--light-accent));
+  transform: scale(1.1);
+}
+
+.light-theme ::-webkit-scrollbar-thumb:active {
+  background: var(--light-accent);
+}
+
+/* Firefox scrollbar */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--dark-accent) transparent;
+}
+
+.light-theme html {
+  scrollbar-color: var(--light-accent) transparent;
 }
 
 body {
   font-family: "DM Sans", sans-serif;
   overflow-x: hidden;
+  overflow-y: auto;
   transition: all 0.8s ease;
-  min-height: 100vh;
   font-weight: 400;
   letter-spacing: 0.01em;
   /* Prevent layout shifts during viewport changes */
   position: relative;
   overflow-anchor: none;
+  height: 100%;
 }
 
 /* Link Styling - Remove default blue color */
@@ -76,7 +143,7 @@ a:hover {
   color: var(--light-text);
 }
 
-/* Theme Toggle Slider */
+/* Transparent Glass Theme Toggle */
 .theme-toggle {
   position: fixed;
   top: 30px;
@@ -84,46 +151,234 @@ a:hover {
   z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 15px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 15px 25px;
-  border-radius: 50px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-.theme-label {
-  font-size: 14px;
-  font-weight: 500;
-  font-family: "Space Grotesk", sans-serif;
+  gap: 20px;
+  padding: 18px 28px;
+  border-radius: 60px;
+  cursor: pointer;
   transition: all 0.3s ease;
+  overflow: visible;
+  
+  /* Ultra-transparent glass effect */
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  
+  /* Minimal border for visibility */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    /* Very subtle outer glow */
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    /* Minimal internal highlight */
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.theme-toggle:hover {
+  transform: scale(1.02) translateY(-2px);
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.12),
+    inset 0 1px 2px rgba(255, 255, 255, 0.15);
+}
+
+/* Remove all complex animations and effects */
+.theme-toggle::before,
+.theme-toggle::after {
+  display: none;
+}
+
+.theme-toggle:active {
+  transform: scale(0.98);
+  transition: all 0.1s ease;
+}
+
+.theme-label {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: "Space Grotesk", sans-serif;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  opacity: 0.7;
+  color: rgba(255, 255, 255, 0.9);
+  z-index: 2;
+  position: relative;
 }
 
 .dark-theme .theme-label.career {
-  color: var(--dark-accent);
+  color: #d2691e;
+  opacity: 1;
+  text-shadow: 0 0 8px rgba(210, 105, 30, 0.3);
 }
 
 .light-theme .theme-label.personal {
-  color: var(--light-accent);
+  color: #ec4899;
+  opacity: 1;
+  text-shadow: 0 0 8px rgba(236, 72, 153, 0.3);
 }
 
+/* Liquid Glass Slider */
 .slider {
   position: relative;
-  width: 60px;
-  height: 30px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
+  width: 80px;
+  height: 40px;
+  border-radius: 20px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  overflow: hidden;
+  z-index: 2;
+  
+  /* Core Liquid Glass Properties */
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  
+  /* Glass physics with lensing */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    inset 0 1px 2px rgba(255, 255, 255, 0.3),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
+.slider:hover {
+  backdrop-filter: blur(50px) saturate(200%) brightness(120%);
+  -webkit-backdrop-filter: blur(50px) saturate(200%) brightness(120%);
+  box-shadow: 
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.1),
+    0 6px 24px rgba(0, 0, 0, 0.15);
+}
+
+.slider:active {
+  transform: scale(0.98);
+}
+
+/* Liquid Glass Slider Button */
 .slider-button {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 24px;
-  height: 24px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  z-index: 3;
+  
+  /* Handle uses thicker glass appearance with stronger lensing */
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px) saturate(180%) brightness(110%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(110%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  
+  /* Spherical glass effect with magnification */
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.12),
+    /* Magnification ring */
+    0 0 0 1px rgba(255, 255, 255, 0.3),
+    0 0 0 2px rgba(255, 255, 255, 0.1),
+    /* Sphere highlights */
+    inset 0 2px 4px rgba(255, 255, 255, 0.9),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.08),
+    inset 2px 2px 6px rgba(255, 255, 255, 0.7),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.05),
+    /* Fresnel effect */
+    inset 0 0 10px rgba(255, 255, 255, 0.3);
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.slider-button:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(25px) saturate(200%) brightness(115%);
+  -webkit-backdrop-filter: blur(25px) saturate(200%) brightness(115%);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.4),
+    0 0 0 3px rgba(255, 255, 255, 0.15),
+    inset 0 3px 6px rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.08),
+    inset 3px 3px 8px rgba(255, 255, 255, 0.8),
+    inset -3px -3px 6px rgba(0, 0, 0, 0.05),
+    inset 0 0 15px rgba(255, 255, 255, 0.4);
+}
+
+/* Light theme state */
+.light-theme .slider-button {
+  transform: translateX(43px);
+  background: linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #ec4899 100%);
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 
+    0 6px 20px rgba(236, 72, 153, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.3),
+    0 0 0 2px rgba(236, 72, 153, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.1),
+    inset 2px 2px 6px rgba(255, 255, 255, 0.3),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 0 10px rgba(236, 72, 153, 0.2);
+}
+
+.light-theme .slider-button:hover {
+  transform: translateX(43px) scale(1.05);
+  box-shadow: 
+    0 8px 24px rgba(236, 72, 153, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.4),
+    0 0 0 3px rgba(236, 72, 153, 0.3),
+    inset 0 3px 6px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1),
+    inset 3px 3px 8px rgba(255, 255, 255, 0.4),
+    inset -3px -3px 6px rgba(0, 0, 0, 0.1),
+    inset 0 0 15px rgba(236, 72, 153, 0.3);
+}
+
+/* Dark theme state */
+.dark-theme .slider-button {
+  background: linear-gradient(135deg, #d2691e 0%, #f59e0b 50%, #d2691e 100%);
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 
+    0 6px 20px rgba(210, 105, 30, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.3),
+    0 0 0 2px rgba(210, 105, 30, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.1),
+    inset 2px 2px 6px rgba(255, 255, 255, 0.3),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 0 10px rgba(210, 105, 30, 0.2);
+}
+
+.dark-theme .slider-button:hover {
+  transform: scale(1.05);
+  box-shadow: 
+    0 8px 24px rgba(210, 105, 30, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.4),
+    0 0 0 3px rgba(210, 105, 30, 0.3),
+    inset 0 3px 6px rgba(255, 255, 255, 0.5),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.1),
+    inset 3px 3px 8px rgba(255, 255, 255, 0.4),
+    inset -3px -3px 6px rgba(0, 0, 0, 0.1),
+    inset 0 0 15px rgba(210, 105, 30, 0.3);
+}
+
+/* Theme-specific toggle container styles */
+.dark-theme .theme-toggle {
+  background: rgba(210, 105, 30, 0.15);
+  border-color: rgba(210, 105, 30, 0.25);
+}
+
+.light-theme .theme-toggle {
+  background: rgba(236, 72, 153, 0.15);
+  border-color: rgba(236, 72, 153, 0.25);
+}
+
+.slider-button {
   background: white;
   border-radius: 50%;
   transition: all 0.3s ease;
@@ -1121,7 +1376,7 @@ a:hover {
 .contact-section {
   text-align: center;
   margin: 80px 0 0 0;
-  padding: 60px 20px 80px;
+  padding: 60px 20px;
   background: linear-gradient(135deg, 
     rgba(139, 69, 19, 0.02) 0%, 
     rgba(160, 82, 45, 0.05) 50%, 
@@ -1314,7 +1569,48 @@ a:hover {
 .project-card p {
   position: relative;
   z-index: 1;
-}/* Additional Animation Keyframes */
+}
+
+/* Advanced Liquid Glass Animations */
+@keyframes liquidFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-2px) rotate(0.5deg);
+  }
+  66% {
+    transform: translateY(1px) rotate(-0.3deg);
+  }
+}
+
+@keyframes glassShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes rippleEffect {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 0;
+  }
+}
+
+/* Remove all complex animations and effects */
+.theme-toggle::before,
+.theme-toggle::after {
+  display: none;
+}
+
+/* Additional Animation Keyframes */
 @keyframes slideInLeft {
   from {
     opacity: 0;
@@ -1507,11 +1803,10 @@ html, body {
     font-size: clamp(1.8rem, 7vw, 2.2rem);
     margin-bottom: 30px;
   }
-
   /* Enhanced Mobile Header */
   .header {
     padding: calc(var(--safe-area-top, 0px) + 20px) calc(var(--safe-area-left, 0px) + 20px) 60px calc(var(--safe-area-right, 0px) + 20px);
-    min-height: calc(100vh - var(--safe-area-top, 0px));
+    min-height: calc(100vh - 100px);
   }
 
   /* Mobile-Optimized Theme Toggle */
@@ -1594,7 +1889,7 @@ html, body {
   }
 
   .timeline-item {
-    width: 100%;
+    width: auto; /* FIX: Removed width: 100% to prevent overflow */
     left: 0 !important;
     margin-left: 40px;
     transform: translateX(0) !important;
@@ -1769,11 +2064,9 @@ html, body {
   .theme-toggle, .contact-link, .project-card {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
   }
-
   /* Fix iOS viewport units */
   .header {
     height: -webkit-fill-available;
-    min-height: 100vh;
   }
 
   /* Prevent iOS bounce scroll */
@@ -2439,4 +2732,83 @@ body:has(.main-nav)::before {
   * {
     will-change: auto;
   }
+}
+
+/* Liquid Glass Browser Compatibility & Performance Optimizations */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle {
+    animation: none !important;
+    transition: transform 0.2s ease, opacity 0.2s ease !important;
+  }
+  
+  .theme-toggle::before,
+  .theme-toggle::after {
+    animation: none !important;
+    transition: opacity 0.2s ease !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .theme-toggle {
+    border: 2px solid currentColor;
+    background: rgba(255, 255, 255, 0.9);
+  }
+}
+
+/* Reduced transparency for better performance on weaker devices */
+@media (max-width: 768px) {
+  .theme-toggle {
+    /* Simplified backdrop filter for mobile */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    
+    /* Reduce shadow complexity on mobile */
+    box-shadow: 
+      0 4px 16px var(--glass-shadow),
+      inset 0 1px 2px var(--glass-highlight);
+  }
+  
+  .theme-toggle:hover {
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+  }
+  
+  /* Disable floating animation on mobile for better performance */
+  .theme-toggle {
+    animation: none;
+  }
+}
+
+/* Fallback for browsers without backdrop-filter support */
+@supports not (backdrop-filter: blur()) {
+  .theme-toggle {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+  
+  .dark-theme .theme-toggle {
+    background: rgba(44, 24, 16, 0.9);
+    border: 1px solid rgba(210, 105, 30, 0.3);
+  }
+  
+  .light-theme .theme-toggle {
+    background: rgba(253, 242, 248, 0.9);
+    border: 1px solid rgba(236, 72, 153, 0.3);
+  }
+}
+
+/* GPU acceleration hints for smooth animations */
+.theme-toggle,
+.theme-toggle::before,
+.theme-toggle::after {
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Force GPU layer */
+}
+
+/* Remove will-change after animations to free up GPU memory */
+.theme-toggle:not(:hover):not(.interacting) {
+  will-change: auto;
 }
