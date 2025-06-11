@@ -2,6 +2,18 @@ let isLightTheme = false;
 let mouseX = 0;
 let mouseY = 0;
 
+// Run emergency mobile scroll fix immediately when script loads
+if (window.innerWidth <= 768) {
+  console.log('🚨 Emergency mobile scroll fix on script load...');
+  document.documentElement.style.overflow = 'visible';
+  document.documentElement.style.overflowY = 'auto';
+  document.documentElement.style.touchAction = 'pan-y';
+  document.body.style.overflow = 'visible';
+  document.body.style.overflowY = 'auto';
+  document.body.style.position = 'static';
+  document.body.style.touchAction = 'pan-y';
+}
+
 function toggleTheme() {
   console.log('🎨 Starting fast theme toggle...');
   const body = document.body;
@@ -441,6 +453,9 @@ function initMobileOptimizations() {
   // PRIORITY: Fix mobile scroll issues first
   fixMobileScrollIssues();
   
+  // PRIORITY: Start scroll monitoring to prevent freezing
+  initScrollMonitoring();
+  
   // Initialize touch interactions
   initTouchInteractions();
   
@@ -464,53 +479,46 @@ function initMobileOptimizations() {
 }
 
 function initTouchInteractions() {
-  // Add touch feedback to interactive elements
-  const touchElements = document.querySelectorAll('.card, .project-card, .gallery-item, .contact-link, .theme-toggle');
+  // Simplified touch feedback that doesn't interfere with scrolling
+  const touchElements = document.querySelectorAll('.card, .project-card, .gallery-item, .contact-link');
   
   touchElements.forEach(element => {
     let touchStartTime = 0;
     let touchStartY = 0;
     let isScrolling = false;
+    let hasMoved = false;
     
     element.addEventListener('touchstart', function(e) {
       touchStartTime = Date.now();
       touchStartY = e.touches[0].clientY;
       isScrolling = false;
-      
-      // Don't apply transform immediately - wait to see if user is scrolling
-      setTimeout(() => {
-        if (!isScrolling && Date.now() - touchStartTime < 100) {
-          this.style.transform = 'scale(0.98)';
-          this.style.transition = 'transform 0.1s ease';
-        }
-      }, 50);
+      hasMoved = false;
     }, { passive: true });
     
     element.addEventListener('touchmove', function(e) {
-      // If user moves more than 10px vertically, they're probably scrolling
+      // If user moves more than 5px vertically, they're scrolling
       const currentY = e.touches[0].clientY;
-      if (Math.abs(currentY - touchStartY) > 10) {
+      if (Math.abs(currentY - touchStartY) > 5) {
         isScrolling = true;
-        // Reset any transforms if scrolling detected
-        this.style.transform = '';
-        this.style.transition = '';
+        hasMoved = true;
       }
     }, { passive: true });
     
-    element.addEventListener('touchend', function() {
-      setTimeout(() => {
-        this.style.transform = '';
-        this.style.transition = '';
-      }, 100);
-    }, { passive: true });
-    
-    element.addEventListener('touchcancel', function() {
-      this.style.transform = '';
-      this.style.transition = '';
+    element.addEventListener('touchend', function(e) {
+      // Only apply touch feedback if it was a tap, not a scroll
+      if (!isScrolling && !hasMoved && Date.now() - touchStartTime < 200) {
+        this.style.transform = 'scale(0.98)';
+        this.style.transition = 'transform 0.1s ease';
+        
+        setTimeout(() => {
+          this.style.transform = '';
+          this.style.transition = '';
+        }, 100);
+      }
     }, { passive: true });
   });
   
-  // Prevent double-tap zoom on theme toggle
+  // Prevent double-tap zoom on theme toggle only
   const themeToggle = document.querySelector('.theme-toggle');
   if (themeToggle) {
     let lastTouchEnd = 0;
@@ -525,49 +533,44 @@ function initTouchInteractions() {
 }
 
 function optimizeScrollPerformance() {
-  let ticking = false;
-  let scrollCount = 0;
   const isMobile = window.innerWidth <= 768;
+  
+  if (isMobile) {
+    // On mobile, disable most scroll effects to prevent interference
+    console.log('📱 Mobile detected: disabling scroll effects for better performance');
+    return;
+  }
+  
+  // Desktop-only scroll effects
+  let ticking = false;
   
   function updateScrollEffects() {
     const scrolled = window.pageYOffset;
     const parallax = document.querySelector(".bg-elements");
     const header = document.querySelector(".header");
 
-    // Ultra-optimized parallax effects for mobile
-    if (!isMobile) {
-      // Only apply parallax on desktop for better mobile performance
-      if (parallax) {
-        const speed = scrolled * 0.15; // Even more reduced
-        parallax.style.transform = `translate3d(0, ${speed}px, 0)`;
-      }
-
-      if (header) {
-        const headerParallax = scrolled * 0.1; // Even more reduced
-        header.style.transform = `translate3d(0, ${headerParallax}px, 0)`;
-      }
+    if (parallax) {
+      const speed = scrolled * 0.15;
+      parallax.style.transform = `translate3d(0, ${speed}px, 0)`;
     }
 
-    // Super throttled scroll progress update for mobile
-    scrollCount++;
-    if (scrollCount % (isMobile ? 10 : 5) === 0) { // Update even less frequently on mobile
-      const winHeight = window.innerHeight;
-      const docHeight = document.documentElement.scrollHeight;
-      const scrollPercent = scrolled / (docHeight - winHeight);
-      document.documentElement.style.setProperty("--scroll-progress", scrollPercent);
+    if (header) {
+      const headerParallax = scrolled * 0.1;
+      header.style.transform = `translate3d(0, ${headerParallax}px, 0)`;
     }
+
+    // Update scroll progress
+    const winHeight = window.innerHeight;
+    const docHeight = document.documentElement.scrollHeight;
+    const scrollPercent = scrolled / (docHeight - winHeight);
+    document.documentElement.style.setProperty("--scroll-progress", scrollPercent);
     
     ticking = false;
   }
 
   function requestScrollUpdate() {
     if (!ticking) {
-      if (isMobile) {
-        // Use setTimeout instead of rAF on mobile for better battery life
-        setTimeout(updateScrollEffects, 16);
-      } else {
-        requestAnimationFrame(updateScrollEffects);
-      }
+      requestAnimationFrame(updateScrollEffects);
       ticking = true;
     }
   }
@@ -602,31 +605,8 @@ function handleIOSOptimizations() {
     const vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
     
-    // FIXED: More selective iOS bounce scroll prevention
-    // Only prevent bounce on the body itself, not on scrollable content
-    let startY = 0;
-    
-    document.body.addEventListener('touchstart', function(e) {
-      startY = e.touches[0].clientY;
-    }, { passive: true });
-    
-    document.body.addEventListener('touchmove', function(e) {
-      // Only prevent scrolling if we're trying to scroll past the boundaries
-      const currentY = e.touches[0].clientY;
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      
-      // Allow normal scrolling
-      if (scrollTop > 0 && scrollTop < maxScroll) {
-        return;
-      }
-      
-      // Only prevent bounce at the very top or bottom
-      if ((scrollTop <= 0 && currentY > startY) || 
-          (scrollTop >= maxScroll && currentY < startY)) {
-        e.preventDefault();
-      }
-    }, { passive: false });
+    // REMOVED: iOS bounce prevention as it was blocking normal scrolling
+    console.log('📱 iOS optimizations applied (bounce prevention disabled for scroll compatibility)');
   }
 }
 
@@ -658,84 +638,20 @@ function initMobilePerformanceMonitoring() {
   
   if (!isMobile) return;
   
-  let performanceMode = 'normal'; // normal, reduced, minimal
-  let frameDropCount = 0;
-  let lastFrameTime = performance.now();
+  // SIMPLIFIED: Only apply basic performance optimizations without aggressive monitoring
+  // that might interfere with scrolling
   
-  // Monitor frame rate and adapt performance
-  function monitorFrameRate() {
-    const currentTime = performance.now();
-    const frameDuration = currentTime - lastFrameTime;
-    
-    // If frame takes longer than 20ms (below 50fps), it's a dropped frame
-    if (frameDuration > 20) {
-      frameDropCount++;
-    }
-    
-    // Every 60 frames, check performance and adapt
-    if (frameDropCount > 0 && frameDropCount % 60 === 0) {
-      adaptPerformanceMode();
-    }
-    
-    lastFrameTime = currentTime;
-    requestAnimationFrame(monitorFrameRate);
-  }
+  console.log('📱 Basic mobile performance optimizations applied');
   
-  function adaptPerformanceMode() {
-    if (frameDropCount > 20 && performanceMode === 'normal') {
-      // Switch to reduced performance mode
-      performanceMode = 'reduced';
-      applyReducedPerformanceMode();
-      console.log('📱 Switched to reduced performance mode for better mobile experience');
-    } else if (frameDropCount > 40 && performanceMode === 'reduced') {
-      // Switch to minimal performance mode
-      performanceMode = 'minimal';
-      applyMinimalPerformanceMode();
-      console.log('📱 Switched to minimal performance mode for optimal mobile experience');
-    }
-  }
-  
-  function applyReducedPerformanceMode() {
-    // Reduce background animations
-    const bgElements = document.querySelectorAll('.leaf, .petal');
-    bgElements.forEach((el, index) => {
-      if (index > 6) { // Hide extra elements
-        el.style.display = 'none';
-      } else {
-        el.style.animationDuration = '25s'; // Slower animations
-      }
-    });
-    
-    // Disable parallax completely
-    const parallaxElements = document.querySelectorAll('.bg-elements, .header');
-    parallaxElements.forEach(el => {
-      el.style.transform = 'none';
-    });
-  }
-  
-  function applyMinimalPerformanceMode() {
-    // Further reduce animations
-    const bgElements = document.querySelectorAll('.leaf, .petal');
-    bgElements.forEach((el, index) => {
-      if (index > 4) { // Show even fewer elements
-        el.style.display = 'none';
-      } else {
-        el.style.animationDuration = '30s'; // Even slower animations
-        el.style.opacity = '0.3'; // More transparent
-      }
-    });
-    
-    // Disable all transform effects on polaroids
-    const galleryItems = document.querySelectorAll('.gallery-item');
-    galleryItems.forEach(item => {
-      item.style.transform = 'none !important';
-    });
-  }
-  
-  // Start monitoring after a delay to let initial animations settle
+  // Apply basic optimizations immediately
   setTimeout(() => {
-    requestAnimationFrame(monitorFrameRate);
-  }, 2000);
+    const bgElements = document.querySelectorAll('.leaf, .petal');
+    bgElements.forEach((el, index) => {
+      if (index > 8) { // Limit background elements on mobile
+        el.style.display = 'none';
+      }
+    });
+  }, 1000);
 }
 
 // Add battery-aware optimizations
@@ -937,7 +853,15 @@ function emergencyMobileScrollFix() {
     const html = document.documentElement;
     const body = document.body;
     
-    // Ensure basic scroll properties are correct
+    // Force clear any problematic styles that might be blocking scroll
+    body.style.position = 'static';
+    body.style.top = '';
+    body.style.left = '';
+    body.style.width = '';
+    body.style.height = 'auto';
+    body.style.minHeight = '100vh';
+    
+    // Ensure scrolling is enabled
     html.style.overflow = 'visible';
     html.style.overflowX = 'hidden';
     html.style.overflowY = 'auto';
@@ -947,13 +871,15 @@ function emergencyMobileScrollFix() {
     body.style.overflow = 'visible';
     body.style.overflowX = 'hidden';
     body.style.overflowY = 'auto';
-    body.style.position = 'static';
     body.style.touchAction = 'pan-y';
     body.style.webkitOverflowScrolling = 'touch';
     
-    // Remove any scroll-blocking properties
-    body.style.height = 'auto';
-    body.style.minHeight = '100vh';
+    // Remove any transform that might be interfering
+    body.style.transform = '';
+    html.style.transform = '';
+    
+    // Force reflow to apply changes
+    body.offsetHeight;
     
     console.log('✅ Emergency mobile scroll fixes applied');
   }
@@ -1016,4 +942,64 @@ window.testMobileScroll = function() {
     console.log('🔄 Re-testing after emergency fixes...');
     window.debugMobileScroll();
   }, 200);
+};
+
+// Scroll monitoring failsafe - ensures scroll never gets permanently blocked
+function initScrollMonitoring() {
+  if (window.innerWidth <= 768) {
+    console.log('📱 Starting scroll monitoring failsafe...');
+    
+    let scrollCheckInterval;
+    let lastScrollPosition = 0;
+    let scrollStuckCount = 0;
+    
+    const checkScrollHealth = () => {
+      const currentPosition = window.pageYOffset;
+      const documentHeight = document.documentElement.scrollHeight;
+      const viewportHeight = window.innerHeight;
+      
+      // If content is scrollable but position hasn't changed in multiple checks
+      if (documentHeight > viewportHeight && currentPosition === lastScrollPosition) {
+        scrollStuckCount++;
+        
+        // If scroll appears stuck for more than 3 seconds (6 checks), apply emergency fix
+        if (scrollStuckCount > 6) {
+          console.log('🚨 Scroll appears stuck, applying emergency fix...');
+          emergencyMobileScrollFix();
+          scrollStuckCount = 0;
+        }
+      } else {
+        scrollStuckCount = 0;
+      }
+      
+      lastScrollPosition = currentPosition;
+    };
+    
+    // Check scroll health every 500ms
+    scrollCheckInterval = setInterval(checkScrollHealth, 500);
+    
+    // Stop monitoring after 30 seconds to prevent unnecessary checks
+    setTimeout(() => {
+      clearInterval(scrollCheckInterval);
+      console.log('📱 Scroll monitoring stopped after 30 seconds');
+    }, 30000);
+  }
+}
+
+// Initialize scroll monitoring
+initScrollMonitoring();
+
+// Global function to manually fix scroll if it gets stuck
+window.fixScrollNow = function() {
+  console.log('🛠️ Manual scroll fix triggered...');
+  emergencyMobileScrollFix();
+  
+  // Also try to scroll to test
+  const currentPos = window.pageYOffset;
+  window.scrollTo(0, currentPos + 1);
+  setTimeout(() => {
+    window.scrollTo(0, currentPos);
+  }, 100);
+  
+  console.log('✅ Manual fix completed');
 };
