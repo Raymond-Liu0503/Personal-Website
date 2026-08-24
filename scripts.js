@@ -42,6 +42,8 @@ function toggleTheme() {
     // Switch to light theme (Personal)
     body.classList.remove("dark-theme");
     body.classList.add("light-theme");
+    document.documentElement.classList.remove("dark-theme");
+    document.documentElement.classList.add("light-theme");
     sliderButton.innerHTML = "🌸";
     careerContent.style.display = "none";
     personalContent.style.display = "block";
@@ -54,6 +56,8 @@ function toggleTheme() {
     // Switch to dark theme (Career)
     body.classList.remove("light-theme");
     body.classList.add("dark-theme");
+    document.documentElement.classList.remove("light-theme");
+    document.documentElement.classList.add("dark-theme");
     sliderButton.innerHTML = "🍂";
     careerContent.style.display = "block";
     personalContent.style.display = "none";
