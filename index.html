@@ -1,78 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes"
-    />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
-    <meta name="theme-color" content="#2c1810" />
-    <meta name="apple-mobile-web-app-title" content="Raymond Liu" />
-    <title>Raymond Liu | Portfolio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Poppins:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@400;500;600;700;800;900&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Dancing+Script:wght@400;500;600;700&family=Great+Vibes&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body class="dark-theme">
-    <!-- Background animated elements -->
-    <div class="bg-elements">
-      <!-- Autumn leaves for dark theme -->
-      <div class="leaf">🍂</div>
-      <div class="leaf">🍁</div>
-      <div class="leaf">🍂</div>
-      <div class="leaf">🍁</div>
-      <div class="leaf">🍂</div>
-      <div class="leaf">🍁</div>
-      <div class="leaf">🍂</div>
-      <div class="leaf">🍁</div>
-      <div class="leaf">🍂</div>
-
-      <!-- Cherry blossoms for light theme -->
-      <div class="petal">🌸</div>
-      <div class="petal">🌺</div>
-      <div class="petal">🌸</div>
-      <div class="petal">🌺</div>
-      <div class="petal">🌸</div>
-      <div class="petal">🌺</div>
-      <div class="petal">🌸</div>
-      <div class="petal">🌺</div>
-      <div class="petal">🌸</div>
+<html lang="en" class="dark-theme">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#211e19" />
+  <meta name="description" content="Raymond Liu’s portfolio. Explore my software development journey, projects, photography, and life beyond the screen." />
+  <title>Raymond Liu | Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="scripts.js" defer></script>
+</head>
+<body class="dark-theme">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <nav class="site-nav" aria-label="Main navigation">
+    <a class="wordmark" href="#home" aria-label="Raymond Liu, home">rl<span>.</span></a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#main-content" id="work-link">My work</a>
+      <a href="#contact">Contact</a>
     </div>
-
-    <!-- Theme Toggle -->
-    <div class="theme-toggle">
-      <span class="theme-label career">Career</span>
-      <div class="slider" id="theme-slider">
-        <div class="slider-button">🍂</div>
-      </div>
-      <span class="theme-label personal">Personal</span>
+    <div class="theme-toggle" role="group" aria-label="Portfolio view">
+      <button type="button" class="theme-button" data-theme="career" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 4C9 3 3 8 6 15c5 5 13 1 13-11Z"/><path d="m4 21 11-12M9 16l-1-5m4 2 5 0"/></svg>Career</button>
+      <button type="button" class="theme-button" data-theme="personal" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9C5-3 1 10 8 12c-10 2-1 12 4 4 5 8 14-2 4-4 7-2 3-15-4-3Z"/><circle cx="12" cy="12" r="2"/></svg>Personal</button>
     </div>
+  </nav>
+  <header class="header" id="home">
+    <div class="hero-art" aria-hidden="true">
+      <picture class="landscape autumn-landscape">
+        <source media="(max-width: 600px)" srcset="media/scenery/autumn-mobile.webp" />
+        <img src="media/scenery/autumn.webp" width="1672" height="941" alt="" fetchpriority="high" />
+      </picture>
+      <picture class="landscape spring-landscape">
+        <source media="(max-width: 600px)" data-srcset="media/scenery/blossom-mobile.webp" />
+        <img data-src="media/scenery/blossom.webp" width="1672" height="941" alt="" />
+      </picture>
+    </div>
+    <div class="hero-shade" aria-hidden="true"></div>
+    <div class="falling-foliage" aria-hidden="true"></div>
+    <div class="hero-content">
 
-    <!-- Header Section -->
-    <header class="header">
-      <div class="content">
-        <h1 class="logo">Raymond Liu</h1>
-        <p class="subtitle">
-          Honours Computer Science Student at Carleton University
-        </p>
-      </div>
-    </header>
-    <!-- About Section -->
-    <section class="about-section">
-      <div class="content">
-        <div class="about-container">
+      <h1 class="logo">Raymond <em>Liu</em><span class="name-period">.</span></h1>
+      <p class="subtitle">Honours Computer Science Student<br class="mobile-break" /> at Carleton University</p>
+
+
+    </div>
+    <div class="hero-bottom">
+      <p class="season-marker"><span class="season-dot" aria-hidden="true"></span><span id="season-label">Autumn</span></p>
+      <a class="explore-link" href="#about"><span>Get to know me</span><span class="down-arrow" aria-hidden="true">↓</span></a>
+
+    </div>
+  </header>
+  <main class="page-body">
+    <div class="scenic-edge edge-one" aria-hidden="true"></div>
+    <div class="scenic-edge edge-two" aria-hidden="true"></div>
+    <section class="about-section content" id="about" aria-label="About me">
+      <div class="about-container">
           <div class="about-text-column">
-            <h2 class="section-title">About Me</h2>
+            <p class="eyebrow">01 / A little introduction</p>
+            <h2 class="section-title">About <em>Me</em></h2>
             <p id="about-content">
               As a third-year Computer Science student at Carleton University
               with a minor in Statistics, I am passionate about developing
@@ -84,38 +71,32 @@
           </div>
           <div class="about-image-column">
             <div class="interactive-image-container">
-              <div class="image-border-effect"></div>
+
               <img
                 src="media/IMG_0116.jpg"
                 alt="Raymond Liu"
-                class="profile-image"
-                onerror="this.src='https://via.placeholder.com/300x300/ddd/666?text=Raymond+Liu'"
+                class="profile-image" width="600" height="700" loading="lazy"
               />
               <div class="image-overlay">
                 <div class="overlay-text">
-                  <h4>Me!</h4>
+                  <span class="portrait-caption">Me!</span>
                   <p>Pictured here in Pompeii</p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
       </div>
     </section>
-
-    <!-- Dynamic Content Section -->
-    <section class="cards-container" id="main-content">
-      <div class="content">
-        <!-- Career Content (Default) -->
-        <div id="career-content">
-          <h2 class="section-title">Professional Journey</h2>
+    <section class="cards-container content" id="main-content" tabindex="-1" aria-label="Portfolio collection">
+      <div id="career-content">
+          <div class="section-heading"><div><p class="eyebrow">02 / The path so far</p><h2 class="section-title">Professional <em>Journey</em></h2></div></div>
 
           <!-- Experience Timeline -->
           <div class="timeline">
             <div class="timeline-item">
               <div class="timeline-content">
-                <h4>Software Engineer Intern</h4>
-                <h5>Shopify | May 2026 - August 2026</h5>
+                <h3>Software Engineer Intern</h3>
+                <p class="experience-meta"><span>Shopify</span><span>May 2026 - August 2026</span></p>
                 <p>
                   Integrated web search and five research skills into Sidekick Pulse, Shopify's AI commerce researcher, improving recommendation click-through by 8%. Built multi-query batching, multilingual safeguards, and feedback pipelines to improve efficiency, reliability, and reach.
                 </p>
@@ -123,8 +104,8 @@
             </div>
             <div class="timeline-item">
               <div class="timeline-content">
-                <h4>Infrastructure Engineer Intern</h4>
-                <h5>Shopify | September 2025 - December 2025</h5>
+                <h3>Infrastructure Engineer Intern</h3>
+                <p class="experience-meta"><span>Shopify</span><span>September 2025 - December 2025</span></p>
                 <p>
                   Built Ruby tooling and agentic incident response systems for the enterprise SRE team, accelerating incident resolution and improving system observability.
                 </p>
@@ -132,8 +113,8 @@
             </div>
             <div class="timeline-item">
               <div class="timeline-content">
-                <h4>Software Engineer in Test</h4>
-                <h5>Ciena | May 2025 - August 2025</h5>
+                <h3>Software Engineer in Test</h3>
+                <p class="experience-meta"><span>Ciena</span><span>May 2025 - August 2025</span></p>
                 <p>
                   Worked on the RLS Integration testing team. Developed automated tools to improve test analysis, and conducted hardening tests to discover and diagnose issues on the product.
                 </p>
@@ -141,8 +122,8 @@
             </div>
             <div class="timeline-item">
               <div class="timeline-content">
-                <h4>Software Engineer Intern</h4>
-                <h5>Ciena | May 2024 - December 2024</h5>
+                <h3>Software Engineer Intern</h3>
+                <p class="experience-meta"><span>Ciena</span><span>May 2024 - December 2024</span></p>
                 <p>
                   Worked on the RLS performance and automation team. Developed
                   automated tools and enhanced system performance monitoring.
@@ -151,8 +132,8 @@
             </div>
             <div class="timeline-item">
               <div class="timeline-content">
-                <h4>Software Developer Intern</h4>
-                <h5>Viitai | June 2023 - August 2023</h5>
+                <h3>Software Developer Intern</h3>
+                <p class="experience-meta"><span>Viitai</span><span>June 2023 - August 2023</span></p>
                 <p>
                   Contributed with mainly front-end work and backend testing.
                   Designed UI/UX and developed ShellTOC Help Center.
@@ -162,10 +143,10 @@
           </div>
 
           <!-- Projects Section -->
-          <h2 class="section-title">Projects</h2>
+          <div class="section-heading projects-heading"><div><p class="eyebrow">03 / Selected work</p><h2 class="section-title">Things I’ve <em>built</em></h2></div><a class="text-link" href="https://github.com/Raymond-Liu0503">More on GitHub <span aria-hidden="true">↗</span></a></div>
           <div class="projects-grid">
             <a href="https://github.com/Raymond-Liu0503" class="project-card">
-              <h4>Omni Recs</h4>
+              <h3>Omni Recs</h3>
               <p>
                 An AI-powered, location-based recommendation system using
                 Python, Flask, and Kafka. Integrates LLMs and MapBox API for
@@ -176,7 +157,7 @@
               href="https://github.com/Raymond-Liu0503/Art-Gallery"
               class="project-card"
             >
-              <h4>Art Gallery Platform</h4>
+              <h3>Art Gallery Platform</h3>
               <p>
                 Full-stack art-sharing platform for artists. Built with Node.js,
                 Express, and MongoDB, featuring a RESTful API and a responsive
@@ -184,7 +165,7 @@
               </p>
             </a>
             <a href="https://dango-store.vercel.app/" class="project-card">
-              <h4>Dango E-Commerce Store</h4>
+              <h3>Dango E-Commerce Store</h3>
               <p>
                 A modern Japanese dessert e-commerce store built with React.
                 Features a clean UI/UX designed in Figma, with real-time cart
@@ -192,7 +173,7 @@
               </p>
             </a>
             <a href="https://github.com/Raymond-Liu0503" class="project-card">
-              <h4>Fermet - AI Tutoring Service</h4>
+              <h3>Fermet - AI Tutoring Service</h3>
               <p>
                 An AI tutoring platform built with Python, PydanticAI, Next.js,
                 and MCP. Features deterministic session orchestration, adaptive
@@ -200,16 +181,17 @@
               </p>
             </a>
           </div>
-        </div>
-        <!-- Personal Content (Hidden by default) -->
-        <div id="personal-content">
+
+      </div>
+      <div id="personal-content" hidden>
+        <div class="section-heading"><div><p class="eyebrow">02 / The personal collection</p><h2 class="section-title">Life beyond <em>the screen</em></h2></div></div>
+
           <!-- Personal Gallery -->
           <div class="gallery">
             <div class="gallery-item">
-              <img
-                src="media/astro4.PNG"
+              <img loading="lazy" width="600" height="600"
+                src="media/astro4.png"
                 alt="Astrophotography"
-                onerror="this.src='https://via.placeholder.com/300x300/fce7f3/831843?text=Astrophotography'"
               />
               <div class="gallery-caption">
                 I enjoy shooting astrophotography. This was shot near Murphy's
@@ -217,38 +199,34 @@
               </div>
             </div>
             <div class="gallery-item">
-              <img
+              <img loading="lazy" width="600" height="600"
                 src="media/paris.jpg"
                 alt="Paris Travel"
-                onerror="this.src='https://via.placeholder.com/300x300/fce7f3/831843?text=Paris+Travel'"
               />
               <div class="gallery-caption">
                 Travelling and Photography! Paris shown here.
               </div>
             </div>
             <div class="gallery-item">
-              <img
+              <img loading="lazy" width="600" height="600"
                 src="media/para.jpg"
                 alt="Paragliding"
-                onerror="this.src='https://via.placeholder.com/300x300/fce7f3/831843?text=Paragliding'"
               />
               <div class="gallery-caption">
                 Paragliding adventure in Switzerland.
               </div>
             </div>
             <div class="gallery-item">
-              <img
+              <img loading="lazy" width="600" height="600"
                 src="media/shoko.jpg"
                 alt="My cat Shoko"
-                onerror="this.src='https://via.placeholder.com/300x300/fce7f3/831843?text=Shoko+the+Cat'"
               />
               <div class="gallery-caption">My cat Shoko!</div>
             </div>
             <div class="gallery-item">
-              <img
+              <img loading="lazy" width="600" height="600"
                 src="media/hockey.jpg"
                 alt="Hockey Championship"
-                onerror="this.src='https://via.placeholder.com/300x300/fce7f3/831843?text=Hockey+Team'"
               />
               <div class="gallery-caption">
                 10+ years of competitive hockey. Intramurals championship
@@ -256,56 +234,55 @@
               </div>
             </div>
             <div class="gallery-item">
-              <img
+              <img loading="lazy" width="600" height="600"
                 src="media/lakerd.jpg"
                 alt="Lakers Game"
-                onerror="this.src='https://via.placeholder.com/300x300/fce7f3/831843?text=Lakers+Game'"
               />
               <div class="gallery-caption">
                 Attended a Lakers Nuggets playoff game in 2024 to see the GOAT.
               </div>
             </div>
           </div>
-        </div>
       </div>
     </section>
-
-    <!-- Contact Section -->
-    <footer class="contact-section">
-      <div class="content">
-        <h2 class="section-title">Let's Connect</h2>
-        <div class="contact-links">
-          <div class="contact-link">
-            <span>📧</span>
+  </main>
+  <footer class="contact-section" id="contact">
+    <div class="content">
+      <h2 class="section-title">Let’s <em>Connect</em><span class="name-period">.</span></h2>
+      <div class="contact-links">
+          <a class="contact-link email-link" href="mailto:raymondliu3@cmail.carleton.ca">
+            <span class="mail-icon" aria-hidden="true">↗</span>
             <span>raymondliu3@cmail.carleton.ca</span>
-          </div>
+          </a>
           <a
             href="https://www.linkedin.com/in/raymond-liu-357368268/"
-            target="_blank"
+            target="_blank" rel="noopener noreferrer"
             class="contact-link"
           >
             <img
               src="media/LI-In-Bug.png"
-              alt="LinkedIn"
+              alt=""
               class="contact-icon"
             />
             <span>LinkedIn</span>
           </a>
           <a
             href="https://github.com/Raymond-Liu0503"
-            target="_blank"
+            target="_blank" rel="noopener noreferrer"
             class="contact-link"
           >
             <img
-              src="media/github-mark-white.png"
-              alt="GitHub"
+              src="media/github-mark-white.png" id="github-icon"
+              alt=""
               class="contact-icon"
             />
             <span>GitHub</span>
           </a>
-        </div>
       </div>
-    </footer>
-    <script src="scripts.js" defer></script>
-  </body>
+      <div class="footer-bottom"><a href="#home" class="footer-name">Raymond Liu</a><a href="#home">Back to top <span aria-hidden="true">↑</span></a></div>
+    </div>
+  </footer>
+  <template id="personal-about">Outside of my career, I have a bunch of hobbies I enjoy spending my time on, like photography, sports (Hockey, football, badminton, etc), travelling, and so many other spontaneous activities. I love exploring new places, capturing moments through my camera lens, and enjoying the thrill of outdoor adventures. Here are some snapshots of my personal life that reflect my passions and interests, and make sure to check out my <a href="https://www.instagram.com/raymliu_photography/profilecard/?igsh=MW00MWc4djhjaHFxcA==" class="instagram-link">photography page</a>!</template>
+  <noscript><style>.theme-toggle { display: none; } #personal-content[hidden] { display: block !important; margin-top: 6rem; }</style></noscript>
+</body>
 </html>
