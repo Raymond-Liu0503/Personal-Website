@@ -1,0 +1,6 @@
+# Locally installed agent skills
+/.agents/skills/
+/skills-lock.json
+
+# Machine-local agent hooks
+/.codex/hooks.json
