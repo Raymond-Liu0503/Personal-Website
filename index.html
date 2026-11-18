@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=album-1" />
-  <script src="scripts.js?v=534a4ed4a8e1" defer></script>
+  <link rel="stylesheet" href="styles.css?v=season-turn-5" />
+  <script src="scripts.js?v=season-turn-4" defer></script>
 </head>
 <body class="dark-theme">
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -28,17 +28,17 @@
   </nav>
   <header class="header" id="home">
     <div class="hero-art" aria-hidden="true">
-      <picture class="landscape autumn-landscape">
-        <source media="(max-width: 600px)" srcset="media/scenery/autumn-mobile.webp" />
-        <img src="media/scenery/autumn.webp" width="1672" height="941" alt="" fetchpriority="high" />
+      <picture class="landscape">
+        <source media="(prefers-reduced-motion: no-preference)" srcset="media/scenery/autumn-scene.gif" />
+        <img src="media/scenery/autumn-scene.jpg" width="1280" height="720" alt="" fetchpriority="high" />
       </picture>
-      <picture class="landscape spring-landscape">
-        <source media="(max-width: 600px)" data-srcset="media/scenery/blossom-mobile.webp" />
-        <img data-src="media/scenery/blossom.webp" width="1672" height="941" alt="" />
-      </picture>
+      <template id="spring-art">
+        <picture class="landscape spring-scene">
+          <source media="(prefers-reduced-motion: no-preference)" srcset="media/scenery/spring-scene.gif" />
+          <img src="media/scenery/spring-scene.jpg" width="1280" height="720" alt="" />
+        </picture>
+      </template>
     </div>
-    <div class="hero-shade" aria-hidden="true"></div>
-    <div class="falling-foliage" aria-hidden="true"></div>
     <div class="hero-content">
 
       <h1 class="logo">Raymond <em>Liu</em><span class="name-period">.</span></h1>
@@ -47,7 +47,7 @@
 
     </div>
     <div class="hero-bottom">
-      <p class="season-marker"><span class="season-dot" aria-hidden="true"></span><span id="season-label">Autumn</span></p>
+      <p class="season-marker"><span class="season-dot" aria-hidden="true"></span><span class="season-names"><span id="season-label" class="season-accessible">Autumn</span><span aria-hidden="true" class="autumn-name">Autumn</span><span aria-hidden="true" class="spring-name">Spring</span></span></p>
       <a class="explore-link" href="#about"><span>Get to know me</span><span class="down-arrow" aria-hidden="true">↓</span></a>
 
     </div>
