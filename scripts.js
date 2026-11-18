@@ -68,6 +68,29 @@
 
   buttons.forEach(button => button.addEventListener('click', () => setTheme(button.dataset.theme)));
 
+  const wall = document.getElementById('photo-wall');
+  const previous = document.getElementById('gallery-prev');
+  const next = document.getElementById('gallery-next');
+
+  function updateGalleryControls() {
+    previous.disabled = wall.scrollLeft <= 1;
+    next.disabled = wall.scrollLeft >= wall.scrollWidth - wall.clientWidth - 1;
+  }
+
+  function moveAlongWall(direction) {
+    const stops = Array.from(wall.children, print => print.offsetLeft);
+    const target = direction > 0
+      ? stops.find(x => x > wall.scrollLeft + 1)
+      : stops.reverse().find(x => x < wall.scrollLeft - 1);
+    wall.scrollTo({ left: target ?? (direction > 0 ? wall.scrollWidth : 0),
+      behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+  }
+
+  previous.addEventListener('click', () => moveAlongWall(-1));
+  next.addEventListener('click', () => moveAlongWall(1));
+  wall.addEventListener('scroll', updateGalleryControls, { passive: true });
+  new ResizeObserver(updateGalleryControls).observe(wall);
+
   function updateParallax() {
     frame = 0;
     const enabled = !reducedMotion.matches && desktopPointer.matches;

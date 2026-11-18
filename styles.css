@@ -102,7 +102,7 @@ em { font-weight: inherit; }
 .edge-one { top: 12px; left: -160px; transform: rotate(-12deg); }
 .edge-two { top: 900px; right: -180px; transform: rotate(16deg) scaleX(-1); }
 .light-theme .edge-one { transform: scaleX(-1) rotate(-10deg); opacity: .8; }
-.light-theme .edge-two { transform: rotate(-10deg); opacity: .65; }
+.light-theme .edge-two { display: none; }
 .about-section { padding-block: 105px 115px; border-bottom: 1px solid var(--line); }
 .about-container { display: grid; grid-template-columns: 1.3fr 1fr; gap: 110px; align-items: center; }
 .section-title { font-family: "Playfair Display", serif; font-size: clamp(34px, 3.6vw, 49px); font-weight: 400; letter-spacing: -.045em; line-height: 1.23; margin-top: 15px; }
@@ -140,16 +140,29 @@ em { font-weight: inherit; }
 .project-card h3 { font-family: "Playfair Display", serif; font-size: 25px; font-weight: 400; line-height: 1.4; letter-spacing: -.025em; padding-right: 10px; }
 .project-card p { color: var(--muted); font-size: 15px; line-height: 1.8; margin-top: 14px; }
 @media (hover: hover) and (pointer: fine) { .project-card:hover { transform: translateY(-4px); border-color: var(--accent); color: var(--text); } .project-card:hover::after { transform: translate(2px, -2px); } }
-/* Paired album spreads: photographs keep their own proportions, not equal-height cards. */
-.gallery { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); align-items: center; gap: 80px 24px; padding: 16px 12px 28px; }
-.gallery-item { grid-column: 1 / span 6; min-width: 0; margin: 0; padding: 14px 14px 22px; background: #fffcf6; color: #514440; box-shadow: 0 8px 24px #463c3214; transform: rotate(-1.5deg); }
-.gallery-item:nth-child(2n) { grid-column: 8 / span 5; transform: rotate(2deg); }
-.gallery-item--adventure { grid-column: 1 / span 7; transform: rotate(-1deg); }
-.gallery-item.gallery-item--cat { grid-column: 9 / span 4; transform: rotate(3deg); }
-.gallery-item img { display: block; width: 100%; height: auto; background: #e4dbce; }
-.gallery-item--hockey img { aspect-ratio: 4 / 3; object-fit: cover; object-position: center 55%; }
-.gallery-item--basketball img { aspect-ratio: 1; object-fit: cover; }
-.gallery-caption { max-width: 36ch; margin-inline: auto; font-family: "Caveat", cursive; font-size: 23px; line-height: 1.4; text-align: center; padding: 18px 6px 0; text-wrap: pretty; }
+/* Walk into a darker room as the page scrolls. The wash sits behind the
+   collection, so it never filters photographs, covers controls, or traps focus. */
+.light-theme .cards-container { --room: #302c28; --text: #f6ede1; --muted: #d4c7b6; --accent: #e6b6ac; --line: #706258; color: var(--text); }
+.light-theme .cards-container::before { content: ""; position: absolute; z-index: -1; pointer-events: none; inset: -60px calc(50% - 50vw) 0; background: linear-gradient(to bottom, transparent, var(--room) 150px, var(--room) calc(100% - 75px), var(--footer)); }
+/* A continuous exhibition wall; each print retains its original aspect ratio. */
+.gallery-tools { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+.gallery-nav { display: flex; gap: 8px; }
+.gallery-nav button { width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--text); cursor: pointer; font-size: 20px; }
+.gallery-nav button:disabled { opacity: .38; cursor: default; }
+.gallery-nav button:active:not(:disabled) { background: var(--line); }
+.gallery { --print-height: clamp(240px, 32vw, 360px); position: relative; margin-inline: calc(50% - 50vw); display: grid; grid-auto-flow: column; grid-auto-columns: min(42%, 454px); overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: none; counter-reset: print; }
+.gallery::-webkit-scrollbar { display: none; }
+.gallery:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.gallery-item { position: relative; display: grid; grid-template-rows: var(--print-height) auto; justify-items: center; align-items: center; min-width: 0; margin: 0; padding: 84px 8% 30px; scroll-snap-align: start; counter-increment: print; background: radial-gradient(ellipse 49% 56% at 50% 43%, #9b8160 0%, #665744 55%, transparent 100%); }
+/* Brass stem and shade sit above the print, never tinting the photograph. */
+.gallery-item::before, .gallery-item::after { content: ""; position: absolute; left: 50%; transform: translateX(-50%); }
+.gallery-item::before { top: 13px; width: 6px; height: 15px; background: #75664a; }
+.gallery-item::after { top: 25px; width: 82px; height: 8px; border-radius: 4px; background: linear-gradient(#b4a078, #806d4e 60%, #f9dfa3); box-shadow: 0 3px 7px #75603c40; }
+.gallery-item img { display: block; width: auto; height: auto; max-width: 100%; max-height: var(--print-height); padding: clamp(8px, 1vw, 15px); border: 5px solid #4a4034; background: #fcf8ee; box-shadow: 2px 7px 10px #4b3a262e; }
+.gallery-caption { align-self: start; width: min(100%, 225px); margin-top: 22px; padding: 13px 16px 15px; background: #e2d8c7; color: #433b33; box-shadow: 1px 3px 5px #18141155; font-size: 13px; line-height: 1.45; text-wrap: pretty; }
+.gallery-caption::before { content: "Plate " counter(print, decimal-leading-zero); display: block; color: #625344; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+.gallery-caption strong { display: block; margin: 3px 0 4px; font: 500 19px/1.25 "Playfair Display", Georgia, serif; }
+@media (forced-colors: active) { .gallery-caption { border: 1px solid CanvasText; } }
 .contact-section { position: relative; background: var(--footer); border-top: 1px solid var(--line); padding-top: 84px; }
 .contact-section .section-title { text-align: center; font-size: clamp(48px, 5.4vw, 74px); }
 .contact-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 30px; margin: 36px 0 85px; }
@@ -169,7 +182,6 @@ em { font-weight: inherit; }
   .timeline-content { column-gap: 36px; }
 
   .scenic-edge { opacity: .3; }
-  .gallery { gap: 64px 18px; }
 }
 @media (max-width: 760px) {
   html { scroll-padding-top: 90px; }
@@ -204,10 +216,7 @@ em { font-weight: inherit; }
   .project-card { padding: 25px; }
   .project-card h3 { font-size: 23px; }
   .project-card::after { top: 17px; right: 22px; }
-  .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 44px 26px; align-items: start; }
-  .gallery .gallery-item { grid-column: auto; padding: 10px 10px 18px; }
-  .gallery-item:nth-child(2n) { margin-top: 64px; }
-  .gallery-caption { font-size: 21px; padding: 14px 2px 0; }
+  .gallery { grid-auto-columns: 65%; }
   .scenic-edge { width: 220px; height: 220px; }
   .edge-one { left: -165px; top: 40px; }
   .edge-two { right: -180px; }
@@ -235,11 +244,8 @@ em { font-weight: inherit; }
   .projects-grid { grid-template-columns: 1fr; gap: 16px; }
   .project-card { padding: 28px; }
   .project-card::before { margin-bottom: 26px; }
-  .gallery { grid-template-columns: 1fr; gap: 40px; max-width: 420px; margin-inline: auto; padding-inline: 6px; }
-  .gallery .gallery-item { margin-top: 0; padding: 12px 12px 20px; }
-  .gallery-item:nth-child(2n) { width: 90%; justify-self: end; }
-  .gallery .gallery-item--cat { width: 82%; }
-  .gallery-caption { font-size: 22px; }
+  .gallery { grid-auto-columns: 89%; }
+  .gallery-item { padding-top: 68px; }
   .contact-section { padding-top: 65px; }
   .contact-links { gap: 4px 25px; margin-bottom: 55px; }
   .email-link { flex-basis: 100%; justify-content: center; overflow-wrap: anywhere; }
