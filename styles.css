@@ -145,7 +145,8 @@ em { font-weight: inherit; }
 .light-theme .cards-container { --room: #302c28; --text: #f6ede1; --muted: #d4c7b6; --accent: #e6b6ac; --line: #706258; color: var(--text); }
 .light-theme .cards-container::before { content: ""; position: absolute; z-index: -1; pointer-events: none; inset: -60px calc(50% - 50vw) 0; background: linear-gradient(to bottom, transparent, var(--room) 150px, var(--room) calc(100% - 75px), var(--footer)); }
 /* A continuous exhibition wall; each print retains its original aspect ratio. */
-.gallery-tools { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+#personal-content > .section-heading { margin-bottom: clamp(4px, 0.75vw, 10px); }
+.gallery-tools { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 0 12px; color: var(--muted); font-size: 14px; }
 .gallery-nav { display: flex; gap: 8px; }
 .gallery-nav button { width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--text); cursor: pointer; font-size: 20px; }
 .gallery-nav button:disabled { opacity: .38; cursor: default; }
@@ -153,7 +154,7 @@ em { font-weight: inherit; }
 .gallery { --print-height: clamp(240px, 32vw, 360px); position: relative; margin-inline: calc(50% - 50vw); display: grid; grid-auto-flow: column; grid-auto-columns: min(42%, 454px); overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x proximity; scrollbar-width: none; counter-reset: print; }
 .gallery::-webkit-scrollbar { display: none; }
 .gallery:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-.gallery-item { position: relative; display: grid; grid-template-rows: var(--print-height) auto; justify-items: center; align-items: center; min-width: 0; margin: 0; padding: 84px 8% 30px; scroll-snap-align: start; counter-increment: print; background: radial-gradient(ellipse 49% 56% at 50% 43%, #9b8160 0%, #665744 55%, transparent 100%); }
+.gallery-item { position: relative; display: grid; grid-template-rows: var(--print-height) auto; justify-items: center; align-items: center; min-width: 0; margin: 0; padding: 84px 8% 30px; scroll-snap-align: start; counter-increment: print; background: radial-gradient(ellipse 49% 46% at 50% 46%, #9b8160 0%, #665744 54%, #66574430 85%, transparent 100%); }
 /* Brass stem and shade sit above the print, never tinting the photograph. */
 .gallery-item::before, .gallery-item::after { content: ""; position: absolute; left: 50%; transform: translateX(-50%); }
 .gallery-item::before { top: 13px; width: 6px; height: 15px; background: #75664a; }
